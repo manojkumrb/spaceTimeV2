@@ -22,9 +22,10 @@ nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for th
 partRegions				=load('inner_regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRectDense		=partRegions.nodeIDoutRect;
 
-%% for coarse mesh
-devPatterns     =load('devAutoCorrInner_dense.mat');%  %hingeDevArSimLoc
-devPatterns     =devPatterns.femDevDomain;
+%% Loading simulated deviations
+devPatterns		=load('simAutoCorDevInnerBatchesCombined.mat');%  %hingeDevArSimLoc
+devPatterns		=devPatterns.simData;
+devPatterns		=devPatterns(8).FemDevDomain; % as the 6th batch is used for all tests
 
 %% loading from predefined selection
 selNodes	=load('doorInnerSelNodes.mat');
@@ -41,7 +42,7 @@ keyPointIndex(iMnp)	  = 1;
 nodeIDoutRectCoarse	  = bsxfun(@times,keyPointIndex,nodeIDoutRectDense);
 
 %% load optimised error process covariance parameters
-load('optimisedHypParmHinge.mat'); %contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
+load('optimisedHypParmInner.mat'); %contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
 
 sigmaMes    =1E-4;
 nu.Type     ='diag';

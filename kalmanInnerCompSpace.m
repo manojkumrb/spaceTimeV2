@@ -23,7 +23,7 @@ nodeIdDomain    =fem.Domain(idPart).Node;
 nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
 
 %% load pre-defined part regions
-partRegions				=load('inner_regions.mat');% contains variable nodeIDoutRect
+partRegions				=load('inner9Regions.mat');%inner_regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRect		=partRegions.nodeIDoutRect;
 
 
@@ -58,8 +58,8 @@ sn              =0.001;                                             % noise stan
 likfunc         ={'likGauss'};   hyp.lik = log(sn);                 % gaussian likelihood
 sf              =1;                                                 % latent function standard dev
 lScale          =[60;50;100]*rand(1);                               %rand(D,1);% characteristic length scale
-% covMatern       ={@covMaternard,5};  hypMat=log([lScale;sf]);      % Matern class d=5
-covMatern       ={@covSEard};  hypMat=log([lScale;sf]);      % modified matern to sq exp
+covMatern       ={@covMaternard,5};  hypMat=log([lScale;sf]);      % Matern class d=5
+% covMatern       ={@covSEard};  hypMat=log([lScale;sf]);      % modified matern to sq exp
 inf				= @infGaussLik;
 
 hyp.cov         =hypMat;
@@ -71,6 +71,7 @@ infv  = @(varargin) inf(varargin{:},struct('s',01.0));           % VFE, opt.s = 
 
 
 %% log marginal likelihood optimization
+% fitc is used here to avoid the trouble of finding key points again
 hyp				= load('hypInnerFitc.mat');%minimize(hyp, @gp, -50,  infv, m0, cov, likfunc,  x, devSmooth(sourcePattern,:)'); % for covFITC
 hyp             = hyp.hyp;
 %% running spatial gpr prediction
@@ -81,54 +82,54 @@ gprPred(nPattern).Snap(1).Dev=[];
 
 
 % % loading gpr predictions
-load('gprPredSourceBatc6InnerMatenCov.mat');
+% load('gprPredSourceBatc6InnerMatenCov.mat');
 % load('gprPredSourceBatc6InnerSEcov.mat');
 
 
-% for i=numberCompleteMeasure+1:nPattern % numberCompleteMeasure+5 % i for each part
-%     
-%     %%%%%%%%%%%%%%%%%%%%%%%%%
-%     inputPattern=i;%%%%%%%%%%
-%     %%%%%%%%%%%%%%%%%%%%%%%%%
-%     rmse=zeros(maxSnap,1);
-%     
-%     for j=1:maxSnap
-%         
-%         %% Selecting region with measurement
-%         allMesReg       =seqPred(inputPattern).Snap(j).Region;  % gets regions measured upto a given number of snap
-%         allPoints       =zeros(size(nodeIDoutRect,1),1);
-%         for k =1:length(allMesReg)
-%             allPoints   =allPoints|nodeIDoutRect(:,allMesReg(k)); % aggregates all key points from measured regions
-%         end
-%         %%%Plot to verify region selection
-%         %         meshplotAxisDefined(fem,domainID )
-%         %         hold all
-%         %         plotID=find(allPoints);
-%         %         plot3(nodeCoord(plotID,1),nodeCoord(plotID,2),nodeCoord(plotID,3),'*')
-%         %         hold off
-%         
-%         xt=nodeCoord(allPoints,:);
-%         yt=devSmooth(inputPattern,allPoints);
-%         % [xt,sample]=sampleNodes(xt,0.9);
-%         % yt=yt(sample);
-%         
-%         z=nodeCoord;
-%         hypPred.cov=hyp.cov;
-%         hypPred.lik=hyp.lik;
-% 		[mpredicted, s2] = gp(hypPred,infv,m0,cov,likfunc,xt, yt', z);  % with cov funtion modified for fitc
-% 
-% %         [mpredicted, s2] = gp(hypPred, @infExact, m0, csu, likfunc, xt, yt', z);
-%         mpredicted=mpredicted';
-%         
-%         difference=devSmooth(inputPattern,:)-mpredicted;
-%         rmse(j)=sqrt(sum(difference.^2)/length(difference));
-%         gprPred(inputPattern).Snap(j).Rmse=rmse;
-%         gprPred(inputPattern).Snap(j).Dev=mpredicted;
-%         
-%         
-%     end
-%     
-% end
+for i=numberCompleteMeasure+1:nPattern % numberCompleteMeasure+5 % i for each part
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    inputPattern=i;%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    rmse=zeros(maxSnap,1);
+    
+    for j=1:maxSnap
+        
+        %% Selecting region with measurement
+        allMesReg       =seqPred(inputPattern).Snap(j).Region;  % gets regions measured upto a given number of snap
+        allPoints       =zeros(size(nodeIDoutRect,1),1);
+        for k =1:length(allMesReg)
+            allPoints   =allPoints|nodeIDoutRect(:,allMesReg(k)); % aggregates all key points from measured regions
+        end
+        %%%Plot to verify region selection
+        %         meshplotAxisDefined(fem,domainID )
+        %         hold all
+        %         plotID=find(allPoints);
+        %         plot3(nodeCoord(plotID,1),nodeCoord(plotID,2),nodeCoord(plotID,3),'*')
+        %         hold off
+        
+        xt=nodeCoord(allPoints,:);
+        yt=devSmooth(inputPattern,allPoints);
+        % [xt,sample]=sampleNodes(xt,0.9);
+        % yt=yt(sample);
+        
+        z=nodeCoord;
+        hypPred.cov=hyp.cov;
+        hypPred.lik=hyp.lik;
+		[mpredicted, s2] = gp(hypPred,infv,m0,cov,likfunc,xt, yt', z);  % with cov funtion modified for fitc
+
+%         [mpredicted, s2] = gp(hypPred, @infExact, m0, csu, likfunc, xt, yt', z);
+        mpredicted=mpredicted';
+        
+        difference=devSmooth(inputPattern,:)-mpredicted;
+        rmse(j)=sqrt(sum(difference.^2)/length(difference));
+        gprPred(inputPattern).Snap(j).Rmse=rmse;
+        gprPred(inputPattern).Snap(j).Dev=mpredicted;
+        
+        
+    end
+    
+end
 
 
 %% plotting
@@ -240,14 +241,12 @@ totalInstances= nPattern-(numberCompleteMeasure+1);
 delta=((rmseS-rmseST)./rmseS)*100;
 fig=figure;
 hh=plot(delta);
-fig=changeAxesLooks(fig,{'Average improvement in RMSE with Spatio-temporal prediction','compared to spatial prediction '},...
-    'Number of measurements','Percentage improvement');
-print('-r400','spaceAndSTCompInnerImprovePer','-dpng');
+fig=changeAxesLooks(fig,'','Number of measurements','Percentage improvement');
+print('spaceAndSTCompInnerImprovePer','-dpdf');
 
 fig=figure;
 hh=plot(1:length(rmseS),rmseS./totalInstances,1:length(rmseST),rmseST./totalInstances);
-fig=changeAxesLooks(fig,{'Average RMSE of Spatio-temporal prediction','compared to spatial prediction '},...
-    'Number of measurements','RMSE in mm');
+fig=changeAxesLooks(fig,'','Number of measurements','RMSE in mm');
 
 set(hh,'linewidth',1.5);
 
@@ -258,5 +257,5 @@ legendflex(hh, {'Spatial prediction','Spatio-temporal prediction'}, ...
         'fontsize',12, ...
         'xscale', 0.66, ...
         'box','on');
-print('-r400','spaceAndSTCompInner','-dpng');
+print('spaceAndSTCompInner','-dpdf');
 

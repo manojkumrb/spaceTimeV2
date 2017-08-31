@@ -8,36 +8,34 @@ close all;clear all;
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
 path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
-load('seqPedStructHingeCoarseWithRmseTp1_25Eig.mat'); % contains structure seqPred %
-load('deterministicPredHinge.mat');%detSeqHingeCoarse1to5_40rep.mat'); % contains structure regionMes %
-
-zt=femDevDomain;
+load('allDataInner_eigWithkrigYtp135.mat'); % contains structure seqPred %
 
 
-%% deterministic pattern search
+
+% %% deterministic pattern search
 % numberCompleteMeasure=10;
-% regionMes(4).Seq(15).Pattern(1).Dev=[];
+% regionsMes(9).Seq(1).Pattern(1).Dev=[];
 % 
-% for nMes=1:5
-% 	
+% for nMes=1:9
+% 
 % 	delta(nMes).Min=inf;
 % 	delta(nMes).MinSeq=[];
 % 	
 % 	
-% 	
-% 	for j=1:length(regionMes(nMes).Seq)
+% 	for j=1:length(regionsMes(nMes).Seq)
 % 		
 % 		
 % 		rmseD=0;
 % 		rmseA=0;
-% 		allMesReg=regionMes(nMes).Seq(j).Regions;
+% 		allMesReg=regionsMes(nMes).Seq(j).Regions;
 % 		nMesReg=length(allMesReg);
-% 		for i=numberCompleteMeasure+1:size(zt,1) % i for each part
+% 		
+% 		for i=numberCompleteMeasure+1:50 % i for each part
 % 			
 % 			% saving predictions
-% 			ytt(i,:)=regionMes(nMes).Seq(j).Pattern(i).Dev;
-% 			VarYtt(i,:)=regionMes(nMes).Seq(j).Pattern(i).Var;
-% 			rmseD=rmseD+regionMes(nMes).Seq(j).Pattern(i).Rmse;
+% 			ytt(i,:)=regionsMes(nMes).Seq(j).Pattern(i).Dev;
+% 			VarYtt(i,:)=regionsMes(nMes).Seq(j).Pattern(i).Var;
+% 			rmseD=rmseD+regionsMes(nMes).Seq(j).Pattern(i).Rmse;
 % 			rmseA=rmseA+seqPred(i).Snap(nMesReg).RmseT(nMesReg);
 % 		end
 % 		delta(nMes).Seq(j)=((rmseD-rmseA)/rmseD)*100;
@@ -52,7 +50,7 @@ zt=femDevDomain;
 % end
 % 
 % fig=figure;
-% hh=plot(bestSeqComp(2:end));
+% hh=plot(bestSeqComp(1:end));
 % fig=changeAxesLooks(fig,{'Average improvement in RMSE with adaptive measurement','compared to best fixed measurement sequence'},...
 % 	'Number of measurements','Percentage improvement');
 % hh.LineWidth=1.5;
@@ -60,29 +58,31 @@ zt=femDevDomain;
 %% Rmse diff AFTER EACH MEASUREMET AVERAGED FOR ALL PATTERNS
 
 numberCompleteMeasure=10;
-regionMes(4).Seq(15).Pattern(1).Dev=[];
+regionsMes(9).Seq(1).Pattern(1).Dev=[];
 
 
 %% rmse for a given sequence(j) averaged over all parts(variation pattern(i)), compared
 %with average of rmse of adaptive measurements after same no of
 %measurements for all parts(variation pattern)
-for nMes=1:5
-	c = nchoosek(1:6,nMes);
+for nMes=1:9
+	fileName=sprintf('detAllSeq%dReg.mat',nMes);
+	tempvar=load(fileName);
+	regionsMes(nMes).Seq=tempvar.regionsMes.Seq;
 	delta(nMes).Min=inf;
 	delta(nMes).MinSeq=[];
 	
-	for j=1:length(regionMes(nMes).Seq)
+	for j=1:length(regionsMes(nMes).Seq)
 		rmseD=0;
 		rmseA=0;
 		
-		allMesReg=regionMes(nMes).Seq(j).Regions;
+		allMesReg=regionsMes(nMes).Seq(j).Regions;
 		nMesReg=length(allMesReg);
-		for i=numberCompleteMeasure+1:size(zt,1) % i for each part
+		for i=numberCompleteMeasure+1:50 % i for each part
 			
 			% saving predictions
-			ytt(i,:)=regionMes(nMes).Seq(j).Pattern(i).Dev;
-			VarYtt(i,:)=regionMes(nMes).Seq(j).Pattern(i).Var;
-			rmseD=rmseD+regionMes(nMes).Seq(j).Pattern(i).Rmse;
+% 			ytt(i,:)=regionsMes(nMes).Seq(j).Pattern(i).Dev;
+% 			VarYtt(i,:)=regionsMes(nMes).Seq(j).Pattern(i).Var;
+			rmseD=rmseD+regionsMes(nMes).Seq(j).Pattern(i).Rmse;
 			rmseA=rmseA+seqPred(i).Snap(nMesReg).RmseT(nMesReg);
 		end
 		delta(nMes).Seq(j)=((rmseD-rmseA)/rmseD)*100;
@@ -103,8 +103,8 @@ for i=1:nMes
 	rmseAvgAdap(i)=delta(i).RmseA;
 end
 
-nPattern=size(zt,1);
-totalInstances= nPattern-numberCompleteMeasure+1;
+nPattern=50;
+totalInstances= nPattern-(numberCompleteMeasure+1);
 
 % Plotting average RMSE
 fig=figure;

@@ -42,7 +42,7 @@ function [ytt,VarYtt,ytp1,VarYtp1,yttU,ytp1U,VarYttU]=getPredictionsNewInner(int
 
 % simple krigging the residuals
 m0 = {'meanZero'};  hyp.mean = [];      % no hyperparameters are needed
-covFunc = {@covMaternard,3};  % Matern class d=3
+covFunc = {@covMaternard,5};  % Matern class d=3
 likfunc = {'likGauss'};  % gaussian likelihood
 
 

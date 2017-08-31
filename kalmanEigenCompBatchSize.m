@@ -17,7 +17,7 @@ coordi          =fem.xMesh.Node.Coordinate;
 nodeIdDomain    =fem.Domain(idPart).Node;
 nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
 %% load pre-defined part regions
-partRegions     =load('inner_regions.mat');% contains variable nodeIDoutRect
+partRegions     =load('inner9Regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRectDense   =partRegions.nodeIDoutRect;
 
 devPatterns     =load('simAutoCorDevInnerBatchesCombined.mat');%  %hingeDevArSimLoc
@@ -32,8 +32,8 @@ iMnp=selNodes.ID;
 % devCenterd			=devPatterns;%devCenterd1+randn(size(devPatterns))*10e-3;%devPatterns;x=z*sigma+mu;; % set equal to input in a coarse mesh
 % devCenterdKeypoint  =devCenterd(:,iMnp);
 %% setting test ans train data
-nTrainBatch			=[1,2,3,4,5,6,7,8];    % set of batches to run with each value represnting number of consecutive batches to add in train data
-
+nTrainBatch			=[1,2,3,4,5,6,7];    % set of batches to run with each value represnting number of consecutive batches to add in train data
+% stopped at 8th batch, as it is used as test case
 
 for j=1:length(nTrainBatch)       % batches to run
     
@@ -45,7 +45,7 @@ for j=1:length(nTrainBatch)       % batches to run
         devTrain		=[devTrain;devPatterns(l).FemDevDomain];
     end
     
-    devTest				= devPatterns(6).FemDevDomain;   % fixed to 6 for now
+    devTest				= devPatterns(8).FemDevDomain;   % fixed to 6 for now
     
     %% finding key points in each region
     keyPointIndex		  = zeros(size(nodeIDoutRectDense,1),1);
@@ -58,7 +58,7 @@ for j=1:length(nTrainBatch)       % batches to run
     sigmaMes    =1E-4;
     nu.Type     ='diag';
     nu.StdDev   =1e-4;
-    nBasis		=30;%[2,3,4,5,6,7,8,9,10:5:60];         % set containing number of basis vectors to be tested
+    nBasis		=35;%[2,3,4,5,6,7,8,9,10:5:60];         % set containing number of basis vectors to be tested
     
     
     for k=1:length(nBasis)
@@ -81,7 +81,7 @@ for j=1:length(nTrainBatch)       % batches to run
         zt          =devKey; % measurements
         tol         =2;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
         countPart   =1;
-        maxSnap     =20;
+        maxSnap     =9;
         numberCompleteMeasure= 10; % to stabalize the prediction
         pc          =devKey*keyEigVec;
         
@@ -202,7 +202,7 @@ for j=1:length(nTrainBatch)       % batches to run
         toc
         % saving data
         fileString=sprintf('predEigBatch%iNumBasis%iWithKrigBatchComb.mat',nTrainBatch(j) ,nBasis(k));
-        save(fileString,'seqPred');
+        save(fileString,'seqPred','-v7.3');
         
     end
     
@@ -212,7 +212,7 @@ end
 
 %%  reading data from the batch analysis files and plotting
 
-nBatches	=[1,2,3,4,5,6,7,8];
+nBatches	=[1,2,3,4,5,6,7];
 % plot parameters
 markers = {'o','s','d','^','v','x','+','*','.','>','<','p','h','o','s','d','^','v','x'};
 cmapRmsePlot = cbrewer('qual','Set1',length(nBatches));
@@ -221,7 +221,7 @@ rmseAvg=[];
 rmsePlot=[];
 for k=1:length(nBatches)
     
-    fileString=sprintf('predEigBatch%iNumBasis30WithKrigBatchComb.mat',nBatches(k));
+    fileString=sprintf('predEigBatch%iNumBasis35WithKrigBatchComb.mat',nBatches(k));
     seqPred=load (fileString);
     seqPred=seqPred.seqPred;
     

@@ -23,14 +23,14 @@ coordi          =fem.xMesh.Node.Coordinate;
 nodeIdDomain    =fem.Domain(idPart).Node;
 nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
 %% load pre-defined part regions
-partRegions     =load('inner_regions.mat');% contains variable nodeIDoutRect
+partRegions     =load('inner9Regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRectDense   =partRegions.nodeIDoutRect;
 
 devPatterns		=load('simAutoCorDevInnerBatchesCombined.mat');%  %hingeDevArSimLoc
 devPatterns		=devPatterns.simData;
-devPatterns		=devPatterns(6).FemDevDomain; % as the 6th batch is used for all tests
+devPatterns		=devPatterns(8).FemDevDomain; % as the 6th batch is used for all tests
 
-%% loading from predefined selection
+%% loading key points from predefined selection
 selNodes=load('doorInnerSelNodes.mat');
 selNodes=selNodes.selNodes;
 Mnp=selNodes.Coord;
@@ -45,13 +45,13 @@ keyPointIndex(iMnp)	  = 1;
 nodeIDoutRectCoarse= bsxfun(@times,keyPointIndex,nodeIDoutRectDense);
 
 %% load optimised error process covariance parameters
-load('optimisedHypParmInner.mat'); %contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
+load('optimisedHypParmInner.mat'); % hypInnerFitc.mat');%contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
 
 sigmaMes    =1E-4;
 nu.Type     ='diag';
 nu.StdDev   =1e-4;
 devAll      =devCenterd;
-nBasis		=20:10:60;    %40;%     % set containing number of basis vectors
+nBasis		=5:5:70;%5:5:50;    %     % set containing number of basis vectors
 
 
 for k=1:length(nBasis)
@@ -72,7 +72,7 @@ for k=1:length(nBasis)
 	zt          =devKey; % measurements
 	tol         =2;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
 	countPart   =1;
-	maxSnap     =20;
+	maxSnap     =9;
 	numberCompleteMeasure= 10; % to stabalize the prediction
 	pc          =devKey*keyEigVec;
 	
@@ -195,18 +195,19 @@ for k=1:length(nBasis)
 	%% saving data
 	fileString=sprintf('allDataInner_eigWithkrigYtp1%i.mat',nBasis(k));
 	save(fileString,'seqPred');
+% 	clear seqPred;
 	
 	%%  plots
 	
-% 		subPlotRos  =4;
-% 		subPlotCol  =5;
+% 		subPlotRos  =3;
+% 		subPlotCol  =3;
 % 		cmin        =-3;
 % 		cmax        =3;
-% 		nInstances  =2; % number of parts to plot
+% 		nInstances  =1; % number of parts to plot
 % 		cDelta=0.25;     % step size for contourmap
 % 	
 % 	
-% 		for i=numberCompleteMeasure+1:numberCompleteMeasure+nInstances
+% 		for i=numberCompleteMeasure+5:numberCompleteMeasure+5+nInstances
 % 	
 % 			fig1        =figure;
 % 			%     fig2        =figure;
@@ -299,45 +300,45 @@ for k=1:length(nBasis)
 % 			set(0, 'currentfigure', fig1)
 % 			stringTitle=sprintf('Sequence of adaptive measurements based on information gain');
 % 			figtitle(stringTitle);
-	
-			%     fig2=makeSubplotCompact(fig2,subPlotRos, subPlotCol);
-			%     fig2 = tightfig(fig2);
-			%     set(0, 'currentfigure', fig2)
-			%     stringTitle=sprintf('Variance of predicted deviations after each measurement');
-			%     figtitle(stringTitle);
-	
-			%     fig3=makeSubplotCompact(fig3,subPlotRos, subPlotCol);
-			%     fig3 = tightfig(fig3);
-			%     set(0, 'currentfigure', fig3)
-			%     stringTitle=sprintf('Predicted complete part deviations after each measurement');
-			%     figtitle(stringTitle);
-	
-			%     % for single colorbar
-			%     set(0, 'currentfigure', fig2)
-			%
-			%     h=colorbar;
-			%     h.FontSize=12;
-			%     set(get(h,'Ylabel'),'string','mm^{2}','fontweight','bold','fontsize',14)
-			%     set(h, 'Position', [.8314 .11 .03 .8]);
-			%
-			%     set(0, 'currentfigure', fig3)
-			%     h=colorbar;
-			%     h.FontSize=12;
-			%     set(get(h,'Ylabel'),'string','mm','fontweight','bold','fontsize',14)
-			%     set(h, 'Position', [.8314 .11 .03 .8])
-			%
-	
+% 	
+% % 			fig2=makeSubplotCompact(fig2,subPlotRos, subPlotCol);
+% % 			fig2 = tightfig(fig2);
+% % 			set(0, 'currentfigure', fig2)
+% % 			stringTitle=sprintf('Variance of predicted deviations after each measurement');
+% % 			figtitle(stringTitle);
+% % 
+% % 			fig3=makeSubplotCompact(fig3,subPlotRos, subPlotCol);
+% % 			fig3 = tightfig(fig3);
+% % 			set(0, 'currentfigure', fig3)
+% % 			stringTitle=sprintf('Predicted complete part deviations after each measurement');
+% % 			figtitle(stringTitle);
+% % 
+% % 			% for single colorbar
+% % 			set(0, 'currentfigure', fig2)
+% % 
+% % 			h=colorbar;
+% % 			h.FontSize=12;
+% % 			set(get(h,'Ylabel'),'string','mm^{2}','fontweight','bold','fontsize',14)
+% % 			set(h, 'Position', [.8314 .11 .03 .8]);
+% % 
+% % 			set(0, 'currentfigure', fig3)
+% % 			h=colorbar;
+% % 			h.FontSize=12;
+% % 			set(get(h,'Ylabel'),'string','mm','fontweight','bold','fontsize',14)
+% % 			set(h, 'Position', [.8314 .11 .03 .8])
+% 			
+% 	
 % 		end
 	
-		%% % Plotting eigen basis
+%  Plotting eigen basis
 		
 % 		for i=1:size(keyEigVec,2)
 % 		    contourDomainPlot(fem,idPart,keyEigVec(:,i),1);
 % 		    print(sprintf('Basis%i',i),'-dpng')
 % 		end
-	
-		%% %Plotting regions and key points
-	
+% 	
+% 		% %Plotting regions and key points
+% 	
 % 		meshplotAxisDefined(fem,1);
 % 		hold all;
 % 		figDense=gcf;
@@ -358,14 +359,15 @@ for k=1:length(nBasis)
 % 				'o','filled','linewidth',2);
 % 	
 % 		end
-	
+
+
 end
 %%
 % plotting rmse sensitivity
 
 % nBasis		=40;%[5:5:60];
 numberCompleteMeasure=10;
-maxSnap=20;
+maxSnap=9;
 
 % plot parameters
 markers = {'o','s','d','^','v','x','+','*','.','>','<','p','h','o','s','d','^','v','x'};
@@ -414,7 +416,7 @@ rsmeFig1=changeAxesLooks(rsmeFig1,'',stringXlabel,stringYlabel);
 	'fontsize'  ,12         , ...
 	'box'       ,'off'       ,...
 	'title'     ,'Number of basis shapes'   );
-rsmeFig1('PaperPositionMode','auto');
+% rsmeFig1('PaperPositionMode','auto');
 print(stringTitle,'-dpdf');
 
 % plotting absolute eig comparison
@@ -426,7 +428,7 @@ fig=changeAxesLooks(fig,'Average RMSE for different number of eign vectors ',...
 lineRmseEigAvg.LineWidth=1.5;
 plotAxis=fig.Children;
 plotAxis.XTickLabel=num2cell(nBasis);
-fig('PaperPositionMode','auto');
+% fig('PaperPositionMode','auto');
 print('eigCompInnerAvg','-dpdf');
 
 % % plotting absolute first five measurements
@@ -457,7 +459,7 @@ devST=devPatterns(patternNo,:);
 contourDomainPlot(fem,idPart,devST,1)
 view(0,0)
 contourcmap('parula',cDelta);
-fig('PaperPositionMode','auto');
+% fig('PaperPositionMode','auto');
 print('originalDev','-dpdf');
 
 %% debug code
