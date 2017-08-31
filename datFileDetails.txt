@@ -1,0 +1,25 @@
+Details of data files on pc for space time kalman filter all data files in megara
+
+allDataInner_eig2.mat 					: prediction with krigging to test the effect of number of basis vectors
+
+allDataInner_eigBatch1NumBasis30WoKrig 	: Prediction withput krigging with 30 basis vectors for testing effect of number of batches used for learning
+										  Batch1 means fourth batch used to test prediction, eigen basis created successively with 1,2,3, batches
+
+allDataInner_eigWOk2.mat				: prediction without krigging to test the effect of number of basis vectors										
+
+doorInnerSelNodes 						: coordinates of key points, ie points used in kalman filter
+
+interEigVecs25_90_directionChange 		: interpolated eigen vectors first obtained after nodifying the claculation of barycentric coordinates
+
+optimisedHypParmHinge					: gpr optimsed hyper parameters obtained after averaging optimisations of many batches
+
+predEigBatch3NumBasis30WoKrigBatchCombined     : Prediction without krigging with 30 basis vectors for testing effect of number of batches used for learning
+										  Batch3 means 6th batch used to test prediction with basis formed from three batches, ie eigen basis created joining data from 1,2,3 batches
+										  
+simAutoCorDevInnerBatchesCombined 		: Deviation patterns obtained from simulation, containes 10 batches of simulated data with 50 instances each 
+										  also contains deviatons of NC block and clamps
+											
+innerSelNodes - Copy.inp 				: mesh file of the coarse mesh obtained from cgal by advancing front construction		
+deterministicPredHinge.mat				: prediction for hinge with all possible combinations of measurement sequence (1-5 regions) 25 eigen basis
+gprPredSourceBatch6Inner 				: for comparision between space and space time ..has gpr predicitons for all 40 patterns of batch 6 of inner through gpr with optimised hyp from save file.
+									
