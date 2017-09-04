@@ -1,7 +1,7 @@
 % modifications for checking the effect of learning from more batches
 close all;
 clear ;
-dbstop if error;
+% dbstop if error;
 
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
 eps         =10E-16;
@@ -28,9 +28,8 @@ selNodes=load('doorInnerSelNodes.mat');
 selNodes=selNodes.selNodes;
 Mnp=selNodes.Coord;
 iMnp=selNodes.ID;
-
-% devCenterd			=devPatterns;%devCenterd1+randn(size(devPatterns))*10e-3;%devPatterns;x=z*sigma+mu;; % set equal to input in a coarse mesh
-% devCenterdKeypoint  =devCenterd(:,iMnp);
+devTest				= devPatterns(8).FemDevDomain;   % fixed to 6 for now
+devCenterdKeypoint  = devTest(:,iMnp);
 %% setting test ans train data
 nTrainBatch			=[1,2,3,4,5,6,7];    % set of batches to run with each value represnting number of consecutive batches to add in train data
 % stopped at 8th batch, as it is used as test case
@@ -45,7 +44,7 @@ for j=1:length(nTrainBatch)       % batches to run
         devTrain		=[devTrain;devPatterns(l).FemDevDomain];
     end
     
-    devTest				= devPatterns(8).FemDevDomain;   % fixed to 6 for now
+   
     
     %% finding key points in each region
     keyPointIndex		  = zeros(size(nodeIDoutRectDense,1),1);
