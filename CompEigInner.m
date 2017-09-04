@@ -51,7 +51,7 @@ sigmaMes    =1E-4;
 nu.Type     ='diag';
 nu.StdDev   =1e-4;
 devAll      =devCenterd;
-nBasis		=35;%5:5:50;    %     % set containing number of basis vectors
+nBasis		=5:5:70;    %     % set containing number of basis vectors
 
 
 for k=1:length(nBasis)
@@ -190,7 +190,7 @@ for k=1:length(nBasis)
 	toc
 	%% saving data
 	fileString=sprintf('innerEigWithkrigYtp1%i.mat',nBasis(k));
-	save(fileString,'seqPred');
+	save(fileString,'seqPred','-v7.3');
 	clear seqPred;
 	
 	%%  plots
