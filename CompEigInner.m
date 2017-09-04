@@ -8,7 +8,7 @@ clear ;
 dbstop if error;
 
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
-path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
+% path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
 eps         =10E-16;
 fem         =femInit();
@@ -37,7 +37,7 @@ Mnp=selNodes.Coord;
 iMnp=selNodes.ID;
 
 devCenterd			=devPatterns;%devCenterd1+randn(size(devPatterns))*10e-3;%devPatterns;x=z*sigma+mu;; % set equal to input in a coarse mesh
-devCenterdKeypoint  =devCenterd(:,iMnp);
+devCenterdKeypoint  =devPatterns(:,iMnp);
 
 %% finding key points in each region
 keyPointIndex		  = zeros(size(nodeIDoutRectDense,1),1);
@@ -70,7 +70,7 @@ for k=1:length(nBasis)
 	% interpEigVec=interpEigVec.interpEigVec;
 	%%
 	zt          =devKey; % measurements
-	tol         =5;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
+	tol         =4;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
 	countPart   =1;
 	maxSnap     =9;
 	numberCompleteMeasure= 10; % to stabalize the prediction
@@ -155,11 +155,7 @@ for k=1:length(nBasis)
 				keyEigVec,tempEigVec,att,ptt,H,V,R,covErr,hyp,nodeCoord,...
 				nodeCoord(iMnp,:),nodeCoord(regionIndex,:),tempZ);
 % 			contourDomainPlot(fem,1,mpredictedU,1);
-% 			% predicting deviations for the whole part using updated state
-% 			% variables without krigging
-% 			[ytt(i,:),VarYtt(i,:),ytp1(i,:),VarYtp1(i,:),yttU(i,:),ytp1U(i,:),VarYttU(i,:)]=getPredictionsNewInnerWoKrig(interpEigVec,...
-% 				keyEigVec,tempEigVec,att,ptt,H,V,R,covErr,hyp,nodeCoord,...
-% 				nodeCoord(iMnp,:),nodeCoord(regionIndex,:),tempZ);
+
 			
 			% removing the measured region from the list
 			nRegions(indexMax)=[];
@@ -193,9 +189,9 @@ for k=1:length(nBasis)
 	
 	toc
 	%% saving data
-	fileString=sprintf('allDataInner_eigWithkrigYtp1%i.mat',nBasis(k));
+	fileString=sprintf('innerEigWithkrigYtp1%i.mat',nBasis(k));
 	save(fileString,'seqPred');
-% 	clear seqPred;
+	clear seqPred;
 	
 	%%  plots
 	
@@ -376,7 +372,7 @@ cmapRmsePlot = cbrewer('qual','Set1',length(nBasis));
 % reading data from file
 for k=1:length(nBasis)
 	
-	fileString=sprintf('allDataInner_eigWithkrigYtp1%i.mat',nBasis(k));
+	fileString=sprintf('innerEigWithkrigYtp1%i.mat',nBasis(k));
 	seqPred=load (fileString);
 	seqPred=seqPred.seqPred;
 	
@@ -384,7 +380,7 @@ for k=1:length(nBasis)
 		rmsePlot(:,i)=seqPred(i).Snap(maxSnap).RmseT;		% accessing each of the 50 replication
 	end
 	
-	rmseAvg(:,k)=sum(rmsePlot,2)./40; % averaging all replications
+	rmseAvg(:,k)=sum(rmsePlot,2)./(length(seqPred)-(numberCompleteMeasure+1)); % averaging all replications
 	
 end
 
@@ -463,20 +459,20 @@ print('eigCompInnerAvg','-dpdf');
 % print('originalDev','-dpdf');
 %% plotting original pattern
 
-
-cDelta= 0.25;
-% cmin        =1.1*min(devPatterns(patternNo,:));
-% cmax        =1.1*max(devPatterns(patternNo,:));
-
-for i=40:45
-	devST=devPatterns(i,:);
-	contourDomainPlot(fem,idPart,devST,1)
-	view(0,0)
-	contourcmap('parula',cDelta);
-end
-
-% fig('PaperPositionMode','auto');
-% print('originalDev','-dpdf');
+% 
+% cDelta= 0.25;
+% % cmin        =1.1*min(devPatterns(patternNo,:));
+% % cmax        =1.1*max(devPatterns(patternNo,:));
+% 
+% for i=40:45
+% 	devST=devPatterns(i,:);
+% 	contourDomainPlot(fem,idPart,devST,1)
+% 	view(0,0)
+% 	contourcmap('parula',cDelta);
+% end
+% 
+% % fig('PaperPositionMode','auto');
+% % print('originalDev','-dpdf');
 
 %% debug code
 % for test=11:50
