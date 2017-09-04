@@ -45,13 +45,13 @@ keyPointIndex(iMnp)	  = 1;
 nodeIDoutRectCoarse= bsxfun(@times,keyPointIndex,nodeIDoutRectDense);
 
 %% load optimised error process covariance parameters
-load('optimisedHypParmInner.mat'); % hypInnerFitc.mat');%contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
+load('hypInnerFitc.mat');%optimisedHypParmInner.mat'); % contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
 
 sigmaMes    =1E-4;
 nu.Type     ='diag';
 nu.StdDev   =1e-4;
 devAll      =devCenterd;
-nBasis		=5:5:70;%5:5:50;    %     % set containing number of basis vectors
+nBasis		=35;%5:5:50;    %     % set containing number of basis vectors
 
 
 for k=1:length(nBasis)
@@ -70,7 +70,7 @@ for k=1:length(nBasis)
 	% interpEigVec=interpEigVec.interpEigVec;
 	%%
 	zt          =devKey; % measurements
-	tol         =2;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
+	tol         =5;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
 	countPart   =1;
 	maxSnap     =9;
 	numberCompleteMeasure= 10; % to stabalize the prediction
@@ -421,7 +421,7 @@ print(stringTitle,'-dpdf');
 
 % plotting absolute eig comparison
 fig=figure;
-rmseAvgeEig=sum(rmseAvg)./20;  % summming errors from all partial measurements for a given number of eigen vectors
+rmseAvgeEig=sum(rmseAvg)./maxSnap;  % summming errors from all partial measurements for a given number of eigen vectors
 lineRmseEigAvg=plot(rmseAvgeEig);
 fig=changeAxesLooks(fig,'Average RMSE for different number of eign vectors ',...
     'Number of eigen basis','RMSE in mm');
@@ -434,7 +434,7 @@ print('eigCompInnerAvg','-dpdf');
 % % plotting absolute first five measurements
 % fig=figure;
 % rmseAvg(6:end,:)=[];
-% rmseAvgeEig=sum(rmseAvg)./20;  % summming errors from all partial measurements for a given number of eigen vectors
+% rmseAvgeEig=sum(rmseAvg)./maxSnap;  % summming errors from all partial measurements for a given number of eigen vectors
 % lineRmseEigAvg=plot(rmseAvgeEig);
 % fig=changeAxesLooks(fig,'Average RMSE for different number of eign vectors ',...
 %     'Number of eigen basis','RMSE in mm');
@@ -443,24 +443,40 @@ print('eigCompInnerAvg','-dpdf');
 % plotAxis.XTickLabel=num2cell(nBasis);
 
 %% plotting zeroth prediction and priginal pattern
+% 
+% patternNo=34;
+% cDelta= 0.25;
+% % cmin        =1.1*min(devPatterns(patternNo,:));
+% % cmax        =1.1*max(devPatterns(patternNo,:));
+% devST0=seqPred(patternNo).Snap(maxSnap).Ytp0;
+% contourDomainPlot(fem,idPart,devST0,1)
+% contourcmap('parula',cDelta);
+% % caxis([cmin cmax])
+% view(0,0)
+% print('zerothPred','-dpdf');
+% 
+% devST=devPatterns(patternNo,:);
+% contourDomainPlot(fem,idPart,devST,1)
+% view(0,0)
+% contourcmap('parula',cDelta);
+% % fig('PaperPositionMode','auto');
+% print('originalDev','-dpdf');
+%% plotting original pattern
 
-patternNo=34;
+
 cDelta= 0.25;
 % cmin        =1.1*min(devPatterns(patternNo,:));
 % cmax        =1.1*max(devPatterns(patternNo,:));
-devST0=seqPred(patternNo).Snap(maxSnap).Ytp0;
-contourDomainPlot(fem,idPart,devST0,1)
-contourcmap('parula',cDelta);
-% caxis([cmin cmax])
-view(0,0)
-print('zerothPred','-dpdf');
 
-devST=devPatterns(patternNo,:);
-contourDomainPlot(fem,idPart,devST,1)
-view(0,0)
-contourcmap('parula',cDelta);
+for i=40:45
+	devST=devPatterns(i,:);
+	contourDomainPlot(fem,idPart,devST,1)
+	view(0,0)
+	contourcmap('parula',cDelta);
+end
+
 % fig('PaperPositionMode','auto');
-print('originalDev','-dpdf');
+% print('originalDev','-dpdf');
 
 %% debug code
 % for test=11:50

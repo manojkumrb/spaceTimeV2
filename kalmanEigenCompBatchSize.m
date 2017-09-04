@@ -53,7 +53,7 @@ for j=1:length(nTrainBatch)       % batches to run
     nodeIDoutRectCoarse= bsxfun(@times,keyPointIndex,nodeIDoutRectDense);
     
     %% load optimised error process covariance parameters
-    load('optimisedHypParmHinge.mat'); %contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
+    load('hypInnerFitc.mat');%optimisedHypParmHinge.mat'); %contains struct hyp in gp function format(i.e. hyp.cov=log(parameters)) for matern covariance
     
     sigmaMes    =1E-4;
     nu.Type     ='diag';
@@ -160,24 +160,18 @@ for j=1:length(nTrainBatch)       % batches to run
                 % updating the state variables after partial measurement
                 [tempKt,att,ptt]=getKalmanStatett(pttm1,attm1,tempEigVec,tempR,tempV,tempZ');
                 
-                %                 % predicting deviations for the whole part using updated
-                %                 state variables with krigging error included
+                % % predicting deviations for the whole part using updated
+                %state variables with krigging error included
                 [ytt(i,:),VarYtt(i,:),ytp1(i,:),VarYtp1(i,:),yttU(i,:),ytp1U(i,:),VarYttU(i,:)]=getPredictionsNewInner(interpEigVec,...
                     keyEigVec,tempEigVec,att,ptt,H,V,R,covErr,hyp,nodeCoord,...
                     nodeCoord(iMnp,:),nodeCoord(regionIndex,:),tempZ);
-                %                 % predicting deviations for the whole part using updated state
-                %                 % variables without krigging
-                % 				[ytt(i,:),VarYtt(i,:),ytp1(i,:),VarYtp1(i,:),yttU(i,:),ytp1U(i,:),VarYttU(i,:)]=getPredictionsNewInnerWoKrig(interpEigVec,...
-                % 					keyEigVec,tempEigVec,att,ptt,H,V,R,covErr,hyp,nodeCoord,...
-                % 					nodeCoord(iMnp,:),nodeCoord(regionIndex,:),tempZ);
-                %
+
                 % removing the measured region from the list
                 nRegions(indexMax)=[];
                 % RMSE calculation for the step
-                %         diff=bsxfun(@minus,devCenterdKeypoint(i,:),ytt(i,:));
-                %         rmseT(nSnaps)=sqrt(sum((diff).^2)/size(devCenterdKeypoint,2));  % rmse without noisy input
-                diff=bsxfun(@minus,devTest(i,:),yttU(i,:));
-                rmseT(nSnaps)=sqrt(sum((diff).^2)/size(devTest,2));  % rmse without noisy input
+				diff=bsxfun(@minus,devCenterdKeypoint(i,:),ytt(i,:));
+				rmseT(nSnaps)=sqrt(sum((diff).^2)/size(devCenterdKeypoint,2));  % rmse without noisy input
+
                 
                 % saving sequential predictions
                 seqPred(i).Snap(nSnaps).Dev=yttU(i,:);
@@ -188,7 +182,7 @@ for j=1:length(nTrainBatch)       % batches to run
             end
             
             % RMSE for (t+1) prediction
-            % 		diff=bsxfun(@minus,devCenterdKeypoint(i,:),ytp1(i-1,:));
+            % diff=bsxfun(@minus,devCenterdKeypoint(i,:),ytp1(i-1,:));
             diff=bsxfun(@minus,devTest(i,:),ytp1U(i-1,:));          % rmse with zero measurements on the ith pattern
             rmseTp1(i)=sqrt(sum((diff).^2)/size(devTest,2));        % rmse without noisy input
             seqPred(i).Snap(maxSnap).rmseTp1=rmseTp1(i);

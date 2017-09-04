@@ -1,0 +1,34 @@
+﻿after adding region 9...recommiting after chages made to include various comparison
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Thu Aug 31 18:46:47 2017 +0100
+#
+# On branch master
+# Your branch is ahead of 'origin/master' by 1 commit.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	modified:   Average RMSE comparison after each measurement for different number of basis.pdf
+#	new file:   batchSizeCompInnerAvg.png
+#	new file:   batchSizeSensitInnerAvg.png
+#	modified:   compareDetAdap.m
+#	new file:   compareDetAdaptiveInner.m
+#	new file:   deterministic_pattern_eval_inner.m
+#	modified:   eigCompInnerAvg.pdf
+#	modified:   getPredictionsNewInner.m
+#	new file:   inner9Regions.mat
+#	modified:   kalmanEigInterpInner.m
+#	modified:   kalmanEigenCompBatchSize.m
+#	modified:   kalmanInnerCompSpace.m
+#	modified:   kalmanInnerEigComp.m
+#	new file:   originalDev.pdf
+#	deleted:    originalDev.png
+#	new file:   spaceAndSTCompInner.pdf
+#	deleted:    spaceAndSTCompInner.png
+#	deleted:    spaceAndSTCompInnerImprovePer.png
+#	deleted:    spaceAndSTCompInnerPttern34.png
+#	deleted:    zerothPred.png
+#
+
