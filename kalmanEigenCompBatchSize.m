@@ -79,7 +79,7 @@ for j=1:length(nTrainBatch)       % batches to run
         %%
         devKey		=devTest(:,iMnp);
         zt          =devKey; % measurements
-        tol         =2;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
+        tol         =4;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2; set to for after sensitivity for inner 9 regions
         countPart   =1;
         maxSnap     =9;
         numberCompleteMeasure= 10; % to stabalize the prediction
@@ -120,7 +120,7 @@ for j=1:length(nTrainBatch)       % batches to run
         tic
         
         seqPred(size(zt,1)).Snap(1).Dev=[];
-        rmseTp1=zeros(size(zt,1),1);
+        rmseTp0=zeros(size(zt,1),1);
         
         
         for i=numberCompleteMeasure+1:size(zt,1) % i for each part
@@ -182,10 +182,10 @@ for j=1:length(nTrainBatch)       % batches to run
             end
             
             % RMSE for (t+1) prediction
-            % diff=bsxfun(@minus,devCenterdKeypoint(i,:),ytp1(i-1,:));
-            diff=bsxfun(@minus,devTest(i,:),ytp1U(i-1,:));          % rmse with zero measurements on the ith pattern
-            rmseTp1(i)=sqrt(sum((diff).^2)/size(devTest,2));        % rmse without noisy input
-            seqPred(i).Snap(maxSnap).rmseTp1=rmseTp1(i);
+            diff=bsxfun(@minus,devCenterdKeypoint(i,:),ytp1(i-1,:));
+%             diff=bsxfun(@minus,devTest(i,:),ytp1U(i-1,:));          % rmse with zero measurements on the ith pattern
+            rmseTp0(i)=sqrt(sum((diff).^2)/size(devTest,2));        % rmse without noisy input
+            seqPred(i).Snap(maxSnap).rmseTp0=rmseTp0(i);
             
             % predicting the state variables and their variances for (t+1)
             [attm1,pttm1]=getKalmanStatettm1(ptt,att,H,covErr);
@@ -195,7 +195,7 @@ for j=1:length(nTrainBatch)       % batches to run
         
         toc
         % saving data
-        fileString=sprintf('predEigBatch%iNumBasis%iWithKrigBatchComb.mat',nTrainBatch(j) ,nBasis(k));
+        fileString=sprintf('predEig%iBatch%iBasisWithKrig.mat',nTrainBatch(j) ,nBasis(k));
         save(fileString,'seqPred','-v7.3');
         
     end
@@ -213,9 +213,10 @@ cmapRmsePlot = cbrewer('qual','Set1',length(nBatches));
 
 rmseAvg=[];
 rmsePlot=[];
+nInstances=length(seqPred)-(numberCompleteMeasure+1);
 for k=1:length(nBatches)
     
-    fileString=sprintf('predEigBatch%iNumBasis35WithKrigBatchComb.mat',nBatches(k));
+    fileString=sprintf('predEig%iBatch35BasisWithKrig.mat',nBatches(k));
     seqPred=load (fileString);
     seqPred=seqPred.seqPred;
     
@@ -223,7 +224,7 @@ for k=1:length(nBatches)
         rmsePlot(:,i)=seqPred(i).Snap(maxSnap).RmseT;		% accessing each of the 50 replication
     end
     
-    rmseAvg(:,k)=sum(rmsePlot,2)./40; % averaging all replications
+    rmseAvg(:,k)=sum(rmsePlot,2)./nInstances; % averaging all replications
     
 end
 % plotting eig cmparison
