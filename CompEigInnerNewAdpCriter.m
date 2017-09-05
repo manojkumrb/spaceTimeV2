@@ -3,7 +3,8 @@
 % graphs in a separate section, also has provisions to check if predictions without kriging
 % are better
 
-close all;
+% { 
+%close all;
 clear ;
 dbstop if error;
 
@@ -21,7 +22,8 @@ idPart      =domainID;
 
 coordi          =fem.xMesh.Node.Coordinate;
 nodeIdDomain    =fem.Domain(idPart).Node;
-nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
+nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain 
+%}
 %% load pre-defined part regions
 partRegions     =load('inner9Regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRectDense   =partRegions.nodeIDoutRect;
@@ -119,30 +121,38 @@ for k=1:length(nBasis)
 		allMesReg=[];
 		nRegions=1:size(nodeIDoutRectCoarse,2);
 		rmseT=zeros(maxSnap,1);
-		
+		selRegion=zeros(maxSnap,1);
 		
 		while ~isempty(nRegions)&&(nSnaps<=maxSnap)
 			selIndex=zeros(length(nRegions),1);
+			distance=zeros(length(nRegions),1);
 			
 			% prediction based on t-1 to predict first region to measure
 			for j=1:length(nRegions)
 				if nSnaps==1
-					% when no region is measured use previous prediction (ytp1)
+					% when no region is measured use previous prediction
+					% (ytp1) and distance is set to zero
 					devPart=ytp1(i-1,:);
 					varPart=VarYtp1(i-1,:);
+					distance(j)=0;
 				else
 					% when some regions are measured use updated prediction (ytt)
 					devPart=ytt(i,:);
 					varPart=VarYtt(i,:);
+					[distance(j)]=getDistBwRegions(nodeIDoutRectCoarse,nodeCoord, nRegions(j),selRegion(nSnaps-1));
 				end
+				
 				[devRegion,varRegion]=getRegionDevVarInner(nodeIDoutRectCoarse,nRegions(j),devPart,varPart,iMnp);
 				% calculating the probability of being out of tolerance
-				[selIndex(j)]=getRegionScore(tol, devRegion, varRegion);
+				[selIndex(j)]=getRegionScore(tol, devRegion, varRegion);				
+				
 			end
+			combinedScore=getCombinedScore(selIndex,distance,0.7,0.3);
 			
-			[~,indexMax]=max(selIndex);
-			selRegion=nRegions(indexMax);
-			allMesReg=[allMesReg;selRegion]; % all the measured regions
+			[~,indexMax]=max(combinedScore);
+			
+			selRegion(nSnaps)=nRegions(indexMax);
+			allMesReg=[allMesReg;selRegion(nSnaps)]; % all the measured regions
 			
 			[tempV,tempR,tempEigVec,tempZ,regionIndex]=getRegionSysMatInner(nodeIDoutRectCoarse,...
 				allMesReg,V,R,interpEigVec,devAll(i,:),iMnp);

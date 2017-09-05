@@ -1,7 +1,9 @@
 function [devRegion,varRegion]=getRegionDevVarInner(nodeIDoutRectCoarse,regionID,yt,VarYt,iMnp)
 %
-% Gets deviations and variance corresponding to the region being measured
-% from the deviation information of the whole part
+% Gets deviations and variance corresponding to the key oints in the region being measured
+% from the deviation information of the keypoints for whole part
+% remaps yt to global and then picks key points corresponding to a given
+% region
 %
 % nodeIDoutRect     = no of nodes X no of regions matrix, with ones
 %                     to represent the node belonging to a region
