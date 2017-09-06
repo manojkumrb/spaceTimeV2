@@ -30,7 +30,7 @@ Mnp=selNodes.Coord;
 iMnp=selNodes.ID;
 devTest				= devPatterns(8).FemDevDomain;   % fixed to 6 for now
 devCenterdKeypoint  = devTest(:,iMnp);
-%% setting test ans train data
+%% setting test and train data
 nTrainBatch			=[1,2,3,4,5,6,7];    % set of batches to run with each value represnting number of consecutive batches to add in train data
 % stopped at 8th batch, as it is used as test case
 

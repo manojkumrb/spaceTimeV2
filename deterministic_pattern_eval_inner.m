@@ -24,16 +24,12 @@ nodeIDoutRectDense   =partRegions.nodeIDoutRect;
 
 devPatterns		=load('simAutoCorDevInnerBatchesCombined.mat');%  %hingeDevArSimLoc
 devPatterns		=devPatterns.simData;
-devPatterns		=devPatterns(8).FemDevDomain; % as the 6th batch is used for all tests
 
 %% loading key points from predefined selection
 selNodes=load('doorInnerSelNodes.mat');
 selNodes=selNodes.selNodes;
 Mnp=selNodes.Coord;
 iMnp=selNodes.ID;
-
-devCenterd			=devPatterns;%devCenterd1+randn(size(devPatterns))*10e-3;%devPatterns;x=z*sigma+mu;; % set equal to input in a coarse mesh
-devCenterdKeypoint  =devCenterd(:,iMnp);
 
 %% finding key points in each region
 keyPointIndex		  = zeros(size(nodeIDoutRectDense,1),1);
@@ -46,21 +42,23 @@ load('optimisedHypParmInner.mat'); % hypInnerFitc.mat');%contains struct hyp in 
 sigmaMes    =1E-5;
 nu.Type     ='diag';   % it turned out that, diagonal small scale covariance is better than a structured covariance function
 nu.StdDev   =1e-4;
-devAll      =devCenterd;
+devTest     =devPatterns(8).FemDevDomain; 
+devTrain	=devPatterns(1).FemDevDomain; 
+devKey		=devTest(:,iMnp);
+	
 nBasis		=35;%20:10:60;    %     % set containing number of basis vectors
 
 %% kalman recursion
-	[keyEigVec,R,V,H,covErr]=getSystemMatricesSampled(nodeCoord,devAll,...
+	[keyEigVec,R,V,H,covErr]=getSystemMatricesSampled(nodeCoord,devTrain,...
 		sigmaMes,nu,iMnp,nBasis);
-	devKey=devAll(:,iMnp);
 	
+
 	%% eigen interpolation
 	fileNameCoarse= 'innerSelNodes - Copy.inp'; % the mesh of key points created fro cgal
 	interpEigVec=getEigenInterp(nodeCoord,fileNameCoarse,keyEigVec, domainID);
 	% interpEigVec=load('interpEigVecInner3_400.mat');
 	% interpEigVec=interpEigVec.interpEigVec;
 	%%
-	zt          =devKey; % measurements
 	tol         =2;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
 	countPart   =1;
 	maxSnap     =9;
@@ -76,9 +74,9 @@ nBasis		=35;%20:10:60;    %     % set containing number of basis vectors
 	VarYtp1     =zeros(size(ytp1));
 	
 	%% initialization for dense mesh
-	yttU        =zeros(size(devAll));
-	ytp1U       =zeros(size(devAll));
-	VarYttU		=zeros(size(devAll));
+	yttU        =zeros(size(devTest));
+	ytp1U       =zeros(size(devTest));
+	VarYttU		=zeros(size(devTest));
 
 % to stabalise the filtering equations
 for i=1:numberCompleteMeasure
@@ -92,7 +90,7 @@ for i=1:numberCompleteMeasure
 		end
 		
 		%observation
-		[kt,att,ptt]=getKalmanStatett(pttm1,attm1,keyEigVec,R,V,zt(i,:)');
+		[kt,att,ptt]=getKalmanStatett(pttm1,attm1,keyEigVec,R,V,devKey(i,:)');
 		% prediction
 		[ytt(i,:),VarYtt(i,:),ytp1(i,:),VarYtp1(i,:)]=getPredictions(keyEigVec,att,ptt,H,V,R,covErr);
 	
@@ -102,7 +100,7 @@ end
 
 regionsMes.Seq(1).Pattern(1).Dev=[];
 
-for nMes=3:9
+for nMes=1:9
 	
 	% creating all possible combinations as measuring regions 1,5,3 and 1,3,5
 	% give the same result
@@ -111,13 +109,13 @@ for nMes=3:9
 	
 	for kk=1:size(cTotal,1)
 		
-		for i=numberCompleteMeasure+1:size(zt,1) % i for each part
+		for i=numberCompleteMeasure+1:size(devKey,1) % i for each part
 			
 			allMesReg=cTotal(kk,:); % all the measured regions
 					
 			
 			[tempV,tempR,tempEigVec,tempZ,regionIndex]=getRegionSysMatInner(nodeIDoutRectCoarse,...
-				allMesReg,V,R,interpEigVec,devAll(i,:),iMnp);
+				allMesReg,V,R,interpEigVec,devTest(i,:),iMnp);
 			
 			% updating the state variables after partial measurement
 			[tempKt,att,ptt]=getKalmanStatett(pttm1,attm1,tempEigVec,tempR,tempV,tempZ');
@@ -129,8 +127,8 @@ for nMes=3:9
 			
 
 % 			RMSE calculation for the step
-			diff=bsxfun(@minus,devCenterdKeypoint(i,:),ytt(i,:));
-			rmseT=sqrt(sum(diff.^2)/size(devCenterdKeypoint,2));  % rmse for key points
+			diff=bsxfun(@minus,devKey(i,:),ytt(i,:));
+			rmseT=sqrt(sum(diff.^2)/size(devKey,2));  % rmse for key points
 % 			diff=bsxfun(@minus,devAll(i,:),yttU(i,:));
 % 			rmseT(nSnaps)=sqrt(sum((diff).^2)/size(devAll,2));  % rmse for all points
 			

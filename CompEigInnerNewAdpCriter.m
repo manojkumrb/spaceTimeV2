@@ -3,7 +3,7 @@
 % graphs in a separate section, also has provisions to check if predictions without kriging
 % are better
 
-% { 
+%{ 
 % The block comment line to enable effective debug -remove the space after '%'
 %close all;
 clear ;
@@ -55,26 +55,39 @@ nu.Type     ='diag';
 nu.StdDev   =1e-4;
 devAll      =devCenterd;
 nBasis		=35;%5:5:70;    %     % set containing number of basis vectors
-infoWeight  = [0.9,0.8,0.7,0.6,0.5,0.4];
-distweight  = [0.1,0.2,0.3,0.4,0.5,0.6];
+infoWeight  = 1;
+distweight  = 0;
 
 
+%% block to remove redundant calc
+[keyEigVec,R,V,H,covErr]=getSystemMatricesSampled(nodeCoord,devAll,...
+	sigmaMes,nu,iMnp,nBasis);
+devKey=devAll(:,iMnp);
+
+% eigen interpolation
+fileNameCoarse= 'innerSelNodes - Copy.inp';
+interpEigVec=getEigenInterp(nodeCoord,fileNameCoarse,keyEigVec, domainID);
+% interpEigVec=load('interpEigVecInner3_400.mat');
+% interpEigVec=interpEigVec.interpEigVec;
+
+
+%%
 for w=1:length(infoWeight)
 	
 	for ww=1:length(distweight)
 		
 		for k=1:length(nBasis)
 
-			%% kalman recursion
-			[keyEigVec,R,V,H,covErr]=getSystemMatricesSampled(nodeCoord,devAll,...
-				sigmaMes,nu,iMnp,nBasis(k));
-			devKey=devAll(:,iMnp);
-
-			%% eigen interpolation
-			fileNameCoarse= 'innerSelNodes - Copy.inp';
-			interpEigVec=getEigenInterp(nodeCoord,fileNameCoarse,keyEigVec, domainID);
-			% interpEigVec=load('interpEigVecInner3_400.mat');
-			% interpEigVec=interpEigVec.interpEigVec;
+% 			%% kalman recursion
+% 			[keyEigVec,R,V,H,covErr]=getSystemMatricesSampled(nodeCoord,devAll,...
+% 				sigmaMes,nu,iMnp,nBasis(k));
+% 			devKey=devAll(:,iMnp);
+% 
+% 			%% eigen interpolation
+% 			fileNameCoarse= 'innerSelNodes - Copy.inp';
+% 			interpEigVec=getEigenInterp(nodeCoord,fileNameCoarse,keyEigVec, domainID);
+% 			% interpEigVec=load('interpEigVecInner3_400.mat');
+% 			% interpEigVec=interpEigVec.interpEigVec;
 			%%
 			zt          =devKey; % measurements
 			tol         =4;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
