@@ -8,7 +8,7 @@ close all;clear all;
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
 path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
-load('allDataInner_eigWithkrigYtp135.mat'); % contains structure seqPred %
+load('innerEigWithkrigYtp12batch45basis_1.0W1_0.0W2.mat'); % contains structure seqPred %
 
 
 
@@ -104,7 +104,7 @@ for i=1:nMes
 end
 
 nPattern=50;
-totalInstances= nPattern-(numberCompleteMeasure+1);
+totalInstances= nPattern-(numberCompleteMeasure);
 
 % Plotting average RMSE
 fig=figure;
@@ -131,5 +131,48 @@ fig=changeAxesLooks(fig,{'Average improvement in RMSE with adaptive measurement'
 hh.LineWidth=1.5;
 
 
+%% plotting rmse sensitivity separately
+% 
+% % nBasis		=40;%[5:5:60];
+% numberCompleteMeasure=10;
+% maxSnap=9;
+% 
+% % plot parameters
+% markers = {'o','s','d','^','v','x','+','*','.','>','<','p','h','o','s','d','^','v','x'};
+% cmapRmsePlot = cbrewer('qual','Set1',length(nBasis));
+% 
+% % reading data from file
+% 
+% for j=1:length(nTrainBatch)
+% 	
+% 	for w=1:length(infoWeight)
+% 		
+% 		for ww=1:length(distweight)
+% 			
+% 			for k=1:length(nBasis)
+% 				
+% 				fileString=sprintf('innerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
+% 				seqPred=load (fileString);
+% 				seqPred=seqPred.seqPred;
+% 				
+% 				for i=numberCompleteMeasure+1:length(seqPred)
+% 					rmsePlot(:,i)=seqPred(i).Snap(maxSnap).RmseT;		% accessing each of the 50 replication
+% 				end
+% 				
+% 				rmseAvg(:,k)=sum(rmsePlot,2)./(length(seqPred)-(numberCompleteMeasure)); % averaging all replications
+% 				
+% 			end
+% 			
+% 			% plotting eig cmparison
+% 			lineRmseEig=plot(rmseAvg);
+% 			hold on;
+% 			
+% 		end
+% 		
+% 		
+% 	end
+% 	
+% 	
+% end
 
 
