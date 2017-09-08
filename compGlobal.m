@@ -2,14 +2,14 @@
 % removed all redundat code, refer compareEigInnerNewAdapCriter for code to
 % plot and other redundancies
 
-%{
+% {
 % The block comment line to enable effective debug -remove the space after '%'
 %close all;
 clear ;
 dbstop if error;
 
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
-% path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
+path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
 eps         =10E-16;
 fem         =femInit();
@@ -53,8 +53,8 @@ nu.StdDev   =1e-4;
 testBatch		=8;
 nTrainBatch		=[2];
 nBasis			=35;%5:5:70;    %     % set containing number of basis vectors
-infoWeight		= 1;
-distweight		= 0;
+infoWeight		= .8;
+distweight		= .2;
 
 devTest				=devPatterns(testBatch).FemDevDomain;
 devKey  =devTest(:,iMnp);
@@ -275,6 +275,8 @@ for j=1:length(nTrainBatch)
 	
 end
 
+load('S:\DLMR\Manoj\all data sensitivity inner\bestDeterministic.mat')
+plot(rmseAvgDet)
 
 
 
