@@ -361,7 +361,7 @@ end
 %%
 % plotting rmse sensitivity
 
-% nBasis		=40;%[5:5:60];
+nBasis		=[5:5:60];
 numberCompleteMeasure=10;
 maxSnap=9;
 
@@ -372,7 +372,7 @@ cmapRmsePlot = cbrewer('qual','Set1',length(nBasis));
 % reading data from file
 for k=1:length(nBasis)
 	
-	fileString=sprintf('innerEigWithkrigYtp1%i.mat',nBasis(k));
+	fileString=sprintf('innerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',2,nBasis(k),1,0);
 	seqPred=load (fileString);
 	seqPred=seqPred.seqPred;
 	
@@ -412,8 +412,8 @@ rsmeFig1=changeAxesLooks(rsmeFig1,'',stringXlabel,stringYlabel);
 	'fontsize'  ,12         , ...
 	'box'       ,'off'       ,...
 	'title'     ,'Number of basis shapes'   );
-% rsmeFig1('PaperPositionMode','auto');
-print(stringTitle,'-dpdf');
+export_fig(sprintf('Basis%i',i),'-png','-r400','-transparent');
+export_fig(sprintf('Basis%i',i),'-pdf','-transparent');
 
 % plotting absolute eig comparison
 fig=figure;

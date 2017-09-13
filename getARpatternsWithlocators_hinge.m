@@ -3,15 +3,15 @@
 % auto correlated
 close all;clear;
 
-run 'C:\Users\babu_m\code\source\initFiles.m';
+run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
 fem=femInit();
 
-fileName{1}=strcat(inpFiles,'\Remesh_hinge.inp');%\hinge.inp');%\Remesh_hinge.inp');%\top_hat.inp');%\halo.inp');%
-% fem=importMesh(fem,fileName{1});%'top_hat.inp'); %use only for top hat
-fem=importMultiMesh(fem, fileName);%has provisions for domain separation 
+fileName{1}=strcat(inpFiles,'\Remesh_hinge.inp');%\top_hat.inp');%\hinge.inp');%\Remesh_hinge.inp');%\halo.inp');%
+fem=importMesh(fem,fileName{1});%'top_hat.inp'); %use only for top hat
+% fem=importMultiMesh(fem, fileName);%has provisions for domain separation 
 % within code
 fem=femPreProcessing(fem);
-domainID=1;
+domainID=2;
 idPart=domainID;
 normal=fem.xMesh.Node.Normal;
 coordi=fem.xMesh.Node.Coordinate;
@@ -19,7 +19,7 @@ nodeIdDomain=fem.Domain(idPart).Node;
 nodeCoord=fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
 
 % %% finding mesh nodeID
-% 
+
 % meshplotAxisDefined(fem,domainID); figure=gcf; axiss=gca;
 % [nodeIDout,nodeIDoutRect]=guiSelection(figure,axiss,nodeCoord);
 

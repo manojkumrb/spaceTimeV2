@@ -51,7 +51,7 @@ nu.StdDev   =1e-4;
 
 %% setting test and train data and other parameters
 testBatch		=8;
-nTrainBatch		=[2];
+nTrainBatch		=[1,2,3,4,5,6];
 nBasis			=35;%5:5:70;    %     % set containing number of basis vectors
 infoWeight		= .8;
 distweight		= .2;
