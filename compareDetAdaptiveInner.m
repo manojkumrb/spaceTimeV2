@@ -8,7 +8,7 @@ close all;clear all;
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
 path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
-load('innerEigWithkrigYtp12batch45basis_1.0W1_0.0W2.mat'); % contains structure seqPred %
+load('innerEigWithkrigYtp12batch35basis_1.0W1_0.0W2.mat'); % contains structure seqPred %
 
 
 %% Rmse diff AFTER EACH MEASUREMET AVERAGED FOR ALL PATTERNS
@@ -18,14 +18,12 @@ maxSnap                 =9;
 nPattern                =length(seqPred);
 totalInstances          = nPattern-(numberCompleteMeasure);
 
-
 regionsMes(maxSnap).Seq(1).Pattern(1).Dev=[];
-
 
 %% rmse for a given sequence(j) averaged over all parts(variation pattern(i)), compared
 %with average of rmse of adaptive measurements after same no of
 %measurements for all parts(variation pattern)
-for nMes=1:9
+for nMes=1:maxSnap
     fileName=sprintf('detAllSeq%dReg.mat',nMes);
     tempvar=load(fileName);
     regionsMes(nMes).Seq=tempvar.regionsMes.Seq;
@@ -68,12 +66,15 @@ for nMes=1:9
 end
 
 %% plotting 
-
-for i=1:nMes
+for i=1:maxSnap
     rmseAvgDetMin(i)=delta(i).RmseDetMin;
     rmseAvgDetMax(i)=delta(i).RmseDetMax;
     rmseAvgAdap(i)=delta(i).RmseA;
 end
+
+rmseAvgDetMin	= rmseAvgDetMin-rmseAvgDetMin(maxSnap).*ones(size(rmseAvgDetMin));
+rmseAvgDetMax	= rmseAvgDetMax-rmseAvgDetMax(maxSnap).*ones(size(rmseAvgDetMax));
+rmseAvgAdap		= rmseAvgAdap-rmseAvgAdap(maxSnap).*ones(size(rmseAvgAdap));
 
 % standard error claculation
 rmseSE=zeros(totalInstances,maxSnap);

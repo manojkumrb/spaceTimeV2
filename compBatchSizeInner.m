@@ -205,7 +205,7 @@ end
 
 %%  reading data from the batch analysis files and plotting
 
-nBatches	=[1,2,3,4,5,6,7];
+nBatches	=[1,2,3,4,5,6];
 % plot parameters
 markers = {'o','s','d','^','v','x','+','*','.','>','<','p','h','o','s','d','^','v','x'};
 cmapRmsePlot = cbrewer('qual','Set1',length(nBatches));
@@ -215,7 +215,7 @@ rmsePlot=[];
 nInstances=length(seqPred)-(numberCompleteMeasure+1);
 for k=1:length(nBatches)
     
-    fileString=sprintf('predEig%iBatch35BasisWithKrig.mat',nBatches(k));
+    fileString=sprintf('innerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nBatches(k),35,1,0);
     seqPred=load (fileString);
     seqPred=seqPred.seqPred;
     
@@ -224,7 +224,7 @@ for k=1:length(nBatches)
     end
     
     rmseAvg(:,k)=sum(rmsePlot,2)./nInstances; % averaging all replications
-    
+    rmseAvg(:,k)=rmseAvg(:,k)-rmseAvg(maxSnap,k).*ones(size(rmseAvg(:,k)));
 end
 % plotting eig cmparison
 rsmeFig1=figure;

@@ -1,6 +1,6 @@
 % code for comparision of space time KF and krigging
 
-
+% {
 close all;
 clear ;
 % dbstop if error;
@@ -30,7 +30,7 @@ nodeIDoutRect		=partRegions.nodeIDoutRect;
 devPatterns				=load('simAutoCorDevInnerBatchesCombined.mat');%  %hingeDevArSimLoc
 devPatterns				=devPatterns.simData;
 
-seqPred					=load('allDataInner_eigWithkrigYtp140.mat');%predEigBatch2NumBasis30WithKrigBatchComb.mat');
+seqPred					=load('innerEigWithkrigYtp12batch35basis_1.0W1_0.0W2.mat');%predEigBatch2NumBasis30WithKrigBatchComb.mat');
 seqPred					=seqPred.seqPred;
 
 %% loading from predefined selection
@@ -46,7 +46,7 @@ nTrainBatch			=[1,2,3,4,5,6,7,8];    % set of batches to run with each value rep
 
 %% learning parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%
-sourceBatch		=6;			% coming from the batch used to test predictions in batch size comparison
+sourceBatch		=8;			% coming from the batch used to test predictions in batch size comparison
 sourcePattern   =18;%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 x               = nodeCoord; % create a data set
@@ -74,6 +74,7 @@ infv  = @(varargin) inf(varargin{:},struct('s',01.0));           % VFE, opt.s = 
 % fitc is used here to avoid the trouble of finding key points again
 hyp				= load('hypInnerFitc.mat');%minimize(hyp, @gp, -50,  infv, m0, cov, likfunc,  x, devSmooth(sourcePattern,:)'); % for covFITC
 hyp             = hyp.hyp;
+%}
 %% running spatial gpr prediction
 numberCompleteMeasure   =10;
 maxSnap                 =length(seqPred(end).Snap);
@@ -81,66 +82,69 @@ nPattern                =size(devSmooth,1);
 gprPred(nPattern).Snap(1).Dev=[];
 
 
-% % loading gpr predictions
+%% loading gpr predictions
 % load('gprPredSourceBatc6InnerMatenCov.mat');
-% load('gprPredSourceBatc6InnerSEcov.mat');
+load('gprPredInner9regionsBatch8.mat');
 
-
-for i=numberCompleteMeasure+1:nPattern % numberCompleteMeasure+5 % i for each part
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%
-    inputPattern=i;%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%
-    rmse=zeros(maxSnap,1);
-    
-    for j=1:maxSnap
-        
-        %% Selecting region with measurement
-        allMesReg       =seqPred(inputPattern).Snap(j).Region;  % gets regions measured upto a given number of snap
-        allPoints       =zeros(size(nodeIDoutRect,1),1);
-        for k =1:length(allMesReg)
-            allPoints   =allPoints|nodeIDoutRect(:,allMesReg(k)); % aggregates all key points from measured regions
-        end
-        %%%Plot to verify region selection
-        %         meshplotAxisDefined(fem,domainID )
-        %         hold all
-        %         plotID=find(allPoints);
-        %         plot3(nodeCoord(plotID,1),nodeCoord(plotID,2),nodeCoord(plotID,3),'*')
-        %         hold off
-        
-        xt=nodeCoord(allPoints,:);
-        yt=devSmooth(inputPattern,allPoints);
-        % [xt,sample]=sampleNodes(xt,0.9);
-        % yt=yt(sample);
-        
-        z=nodeCoord;
-        hypPred.cov=hyp.cov;
-        hypPred.lik=hyp.lik;
-		[mpredicted, s2] = gp(hypPred,infv,m0,cov,likfunc,xt, yt', z);  % with cov funtion modified for fitc
-
-%         [mpredicted, s2] = gp(hypPred, @infExact, m0, csu, likfunc, xt, yt', z);
-        mpredicted=mpredicted';
-        
-        difference=devSmooth(inputPattern,:)-mpredicted;
-        rmse(j)=sqrt(sum(difference.^2)/length(difference));
-        gprPred(inputPattern).Snap(j).Rmse=rmse;
-        gprPred(inputPattern).Snap(j).Dev=mpredicted;
-        
-        
-    end
-    
-end
-
+%% calculating GPR predictions
+% 
+% for i=numberCompleteMeasure+1:nPattern % numberCompleteMeasure+5 % i for each part
+%     
+%     %%%%%%%%%%%%%%%%%%%%%%%%%
+%     inputPattern=i;%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%
+%     rmse=zeros(maxSnap,1);
+%     
+%     for j=1:maxSnap
+%         
+%         %% Selecting region with measurement
+%         allMesReg       =seqPred(inputPattern).Snap(j).Region;  % gets regions measured upto a given number of snap
+%         allPoints       =zeros(size(nodeIDoutRect,1),1);
+%         for k =1:length(allMesReg)
+%             allPoints   =allPoints|nodeIDoutRect(:,allMesReg(k)); % aggregates all key points from measured regions
+%         end
+%         %%%Plot to verify region selection
+%         %         meshplotAxisDefined(fem,domainID )
+%         %         hold all
+%         %         plotID=find(allPoints);
+%         %         plot3(nodeCoord(plotID,1),nodeCoord(plotID,2),nodeCoord(plotID,3),'*')
+%         %         hold off
+%         
+%         xt=nodeCoord(allPoints,:);
+%         yt=devSmooth(inputPattern,allPoints);
+%         % [xt,sample]=sampleNodes(xt,0.9);
+%         % yt=yt(sample);
+%         
+%         z=nodeCoord;
+%         hypPred.cov=hyp.cov;
+%         hypPred.lik=hyp.lik;
+% 		[mpredicted, s2] = gp(hypPred,infv,m0,cov,likfunc,xt, yt', z);  % with cov funtion modified for fitc
+% 
+% %         [mpredicted, s2] = gp(hypPred, @infExact, m0, csu, likfunc, xt, yt', z);
+%         mpredicted=mpredicted';
+%         
+%         difference=devSmooth(inputPattern,:)-mpredicted;
+%         rmse(j)=sqrt(sum(difference.^2)/length(difference));
+%         gprPred(inputPattern).Snap(j).Rmse=rmse;
+%         gprPred(inputPattern).Snap(j).Dev=mpredicted;
+%         
+%         
+%     end
+%     
+% end
+% 
+% save('gprPredInner9regionsBatch8.mat','gprPred','-v7.3');
 
 %% plotting
+close all
 subPlotRos  =1;
 subPlotCol  =3;
 nInstances  =30; % number of parts to plot
 
 
-for i=numberCompleteMeasure+24%numberCompleteMeasure+1:numberCompleteMeasure+1+nInstances %
-    cmin        =1.1*min(devSmooth(i,:));
-    cmax        =1.1*max(devSmooth(i,:));
+for i=20%numberCompleteMeasure+1:numberCompleteMeasure+1+nInstances %
+    cmin        =min(devSmooth(i,:));
+    cmax        =max(devSmooth(i,:));
     cDelta      =0.25;     % step size for contourmap
     
     rmseST=seqPred(i).Snap(maxSnap).RmseT;
@@ -152,7 +156,13 @@ for i=numberCompleteMeasure+24%numberCompleteMeasure+1:numberCompleteMeasure+1+n
 %% % to plot the contourplot comparison between space and spacetime    
 %     for kk=1:maxSnap
 %         
-%         devST=seqPred(i).Snap(kk).Dev;
+% 		if kk==maxSnap
+% 			devST=devSmooth(i,:);
+% 		else
+% 			devST=seqPred(i).Snap(kk).Dev;
+% 		end
+% 			
+%         
 %         devS=gprPred(i).Snap(kk).Dev;
 %         
 %         var=seqPred(i).Snap(kk).Var;
@@ -177,11 +187,13 @@ for i=numberCompleteMeasure+24%numberCompleteMeasure+1:numberCompleteMeasure+1+n
 %         view(0,0)                           % change figure viewpoint
 %         
 %         contourcmap('parula',cDelta);
+% 		
+% 		
 %         fig1=makeSubplotCompact(fig1,subPlotRos, subPlotCol);
 %         
 % % %       saving figure
 %         figname=sprintf('innerSpaceStCompSnap%i.png',kk);
-% %         print('-r400',fig1,figname,'-dpng')
+% 		export_fig(figname,'-png','-r600','-transparent');
 %     end
     
 %% Plot RMSE for individual pattern
@@ -211,13 +223,13 @@ for i=numberCompleteMeasure+24%numberCompleteMeasure+1:numberCompleteMeasure+1+n
 	print('-r400',fileName,'-dpng');
 end
 %% Plot to select a colourful individual pattern
-% 
-% for i=numberCompleteMeasure+1:nPattern
+% close all
+% for i=40:50%numberCompleteMeasure+1:20
 % 	contourDomainPlot(fem,idPart,devSmooth(i,:),1);
+% 	view(0,0)                           % change figure viewpoint
+% 	figtitle(sprintf('%i',i))
+% 
 % end
-% 
-% 
-
 
 %% Rmse diff AFTER EACH MEASUREMET AVERAGED FOR ALL PATTERNS
 
@@ -236,13 +248,19 @@ for kk=1:maxSnap
            
 end
 
-totalInstances= nPattern-(numberCompleteMeasure+1);
+totalInstances= nPattern-(numberCompleteMeasure);
+
+
+rmseST	= rmseST-rmseST(maxSnap).*ones(size(rmseS));
+rmseS	= rmseS-rmseS(maxSnap).*ones(size(rmseS));
 
 delta=((rmseS-rmseST)./rmseS)*100;
 fig=figure;
 hh=plot(delta);
 fig=changeAxesLooks(fig,'','Number of measurements','Percentage improvement');
 print('spaceAndSTCompInnerImprovePer','-dpdf');
+
+
 
 fig=figure;
 hh=plot(1:length(rmseS),rmseS./totalInstances,1:length(rmseST),rmseST./totalInstances);

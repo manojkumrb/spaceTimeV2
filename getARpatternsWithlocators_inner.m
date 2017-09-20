@@ -89,7 +89,7 @@ for k=1:nBatches
 		
 		fem=femReset(fem);
 		fem=femRefresh(fem);
-		fem=femSolve(fem);
+% 		fem=femSolve(fem);
 		
 		% node deviations are in fem.Sol.U, u,v,w,rot1,rot2,rrot3 sequentially for all nodes
 		femDev(:,1)=fem.Sol.U(1:6:end);% 1 for u, 2 for v,3 for w etc..
@@ -107,7 +107,7 @@ for k=1:nBatches
 		        fem.Post.Contour.ContourVariable='user';
 		        fem.Sol.UserExp=femDevDomain(i,:);
 		        fem.Post.Contour.Resolution=1;
-		        fem.Post.Options.SymbolSize=10;
+		        fem.Post.Options.SymbolSize=15;
 		        fem.Post.Contour.MaxRange=5;
 		        fem.Post.Contour.MinRange=-5;
 		        contourPlot(fem);

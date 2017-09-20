@@ -381,8 +381,10 @@ for k=1:length(nBasis)
 	end
 	
 	rmseAvg(:,k)=sum(rmsePlot,2)./(length(seqPred)-(numberCompleteMeasure+1)); % averaging all replications
-	
+	rmseAvg(:,k)=rmseAvg(:,k)-rmseAvg(maxSnap,k).*ones(size(rmseAvg(:,k)));
 end
+
+
 
 % plotting eig cmparison
 rsmeFig1=figure;
@@ -425,7 +427,9 @@ lineRmseEigAvg.LineWidth=1.5;
 plotAxis=fig.Children;
 plotAxis.XTickLabel=num2cell(nBasis);
 % fig('PaperPositionMode','auto');
-print('eigCompInnerAvg','-dpdf');
+% print('eigCompInnerAvg','-dpdf');
+export_fig('eigCompInnerAvg','-png','-r400','-transparent');
+export_fig('eigCompInnerAvg','-pdf','-transparent');
 
 % % plotting absolute first five measurements
 % fig=figure;
