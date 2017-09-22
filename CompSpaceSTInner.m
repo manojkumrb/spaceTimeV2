@@ -1,6 +1,6 @@
 % code for comparision of space time KF and krigging
 
-% {
+%{
 close all;
 clear ;
 % dbstop if error;
@@ -30,7 +30,7 @@ nodeIDoutRect		=partRegions.nodeIDoutRect;
 devPatterns				=load('simAutoCorDevInnerBatchesCombined.mat');%  %hingeDevArSimLoc
 devPatterns				=devPatterns.simData;
 
-seqPred					=load('innerEigWithkrigYtp12batch35basis_1.0W1_0.0W2.mat');%predEigBatch2NumBasis30WithKrigBatchComb.mat');
+seqPred					=load('innerEigWithkrigYtp12batch45basis_1.0W1_0.0W2.mat');%predEigBatch2NumBasis30WithKrigBatchComb.mat');
 seqPred					=seqPred.seqPred;
 
 %% loading from predefined selection
@@ -268,12 +268,12 @@ fig=changeAxesLooks(fig,'','Number of measurements','RMSE in mm');
 
 set(hh,'linewidth',1.5);
 
-legendflex(hh, {'Spatial prediction','Spatio-temporal prediction'}, ...
+legendflex(hh, {'State-of-art','Proposed methodology'}, ...
         'anchor', {'ne','ne'}, ...
         'buffer', [0 0], ...
         'nrow',   2,...
         'fontsize',12, ...
         'xscale', 0.66, ...
         'box','on');
-print('spaceAndSTCompInner','-dpdf');
+export_fig('spaceAndSTCompInner','-pdf','-transparent');
 

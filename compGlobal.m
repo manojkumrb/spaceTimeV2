@@ -2,7 +2,7 @@
 % removed all redundat code, refer compareEigInnerNewAdapCriter for code to
 % plot and other redundancies
 
-% {
+%{
 % The block comment line to enable effective debug -remove the space after '%'
 %close all;
 clear ;
@@ -23,6 +23,8 @@ idPart      =domainID;
 coordi          =fem.xMesh.Node.Coordinate;
 nodeIdDomain    =fem.Domain(idPart).Node;
 nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
+
+
 %}
 %% load pre-defined part regions
 partRegions     =load('inner9Regions.mat');% contains variable nodeIDoutRect
@@ -51,13 +53,14 @@ nu.StdDev   =1e-4;
 
 %% setting test and train data and other parameters
 testBatch		=8;
-nTrainBatch		=[1,2,3,4,5,6];
-nBasis			=35;%5:5:70;    %     % set containing number of basis vectors
-infoWeight		= .8;
-distweight		= .2;
+nTrainBatch		=2;%[1,2,3,4,5,6];
+nBasis			=45;%5:5:70;    %     % set containing number of basis vectors
+infoWeight		= 1;
+distweight		= 0;
 
 devTest				=devPatterns(testBatch).FemDevDomain;
 devKey  =devTest(:,iMnp);
+
 
 
 for j=1:length(nTrainBatch)
@@ -78,18 +81,22 @@ for j=1:length(nTrainBatch)
 			for k=1:length(nBasis)
 				
 				%% kalman recursion
+% testing to avoid interpolation
+% 				[allEigVec,keyEigVec,R,V,H,covErr]=getSystemMatricesSampledNew(nodeCoord,devTrain,...
+% 					sigmaMes,nu,iMnp,nBasis(k));
+% 				
+% 				interpEigVec=allEigVec;
+				
 				[keyEigVec,R,V,H,covErr]=getSystemMatricesSampled(nodeCoord,devTrain,...
 					sigmaMes,nu,iMnp,nBasis(k));
-				
-				
 				
 				%% eigen interpolation
 				fileNameCoarse= 'innerSelNodes - Copy.inp';
 				interpEigVec=getEigenInterp(nodeCoord,fileNameCoarse,keyEigVec, domainID);
-				% interpEigVec=load('interpEigVecInner3_400.mat');
-				% interpEigVec=interpEigVec.interpEigVec;
+% 				interpEigVec=load('interpEigVecInner3_400.mat');
+% 				interpEigVec=interpEigVec.interpEigVec;
 				%%
-
+				
 				tol         =4;    % is a tricky value affects the adaptivity a lot..currently works well when tol is set to 2
 				countPart   =1;
 				maxSnap     =9;
@@ -216,7 +223,7 @@ for j=1:length(nTrainBatch)
 				
 				toc
 				%% saving data
-				fileString=sprintf('innerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
+				fileString=sprintf('newinnerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
 				save(fileString,'seqPred','-v7.3');
 				clear seqPred;
 				
@@ -230,6 +237,7 @@ for j=1:length(nTrainBatch)
 	
 	
 end
+%%}
 %%
 % plotting rmse sensitivity
 
@@ -251,7 +259,7 @@ for j=1:length(nTrainBatch)
 			
 			for k=1:length(nBasis)
 				
-				fileString=sprintf('innerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
+				fileString=sprintf('newinnerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
 				seqPred=load (fileString);
 				seqPred=seqPred.seqPred;
 				
@@ -275,8 +283,23 @@ for j=1:length(nTrainBatch)
 	
 end
 
-load('S:\DLMR\Manoj\all data sensitivity inner\bestDeterministic.mat')
-plot(rmseAvgDet)
+
+%  Plotting eigen basis
+% opts.tol = 1e-15;
+% opts.maxit=200;
+% opts.p=25;% 
+% [~ ,~,interpEigVec] = svds(devTrain,nBasis,'largest',opts);
+for i=9%size(keyEigVec,2)
+	contourDomainPlot(fem,idPart,devTest(i,:),1);
+% 	contourDomainPlot(fem,idPart,interpEigVec(:,i),1);
+
+% 	print(sprintf('Basis%i',i),'-dpng')
+view([0,0]);
+export_fig(sprintf('pattern%i',i),'-png','-r400','-transparent')
+end
+
+% load('S:\DLMR\Manoj\all data sensitivity inner\bestDeterministic.mat')
+% plot(rmseAvgDet)
 
 
 

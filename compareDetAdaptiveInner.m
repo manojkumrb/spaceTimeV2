@@ -8,7 +8,7 @@ close all;clear all;
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
 path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
-load('innerEigWithkrigYtp12batch35basis_1.0W1_0.0W2.mat'); % contains structure seqPred %
+load('innerEigWithkrigYtp12batch45basis_1.0W1_0.0W2.mat'); % contains structure seqPred %
 
 
 %% Rmse diff AFTER EACH MEASUREMET AVERAGED FOR ALL PATTERNS
@@ -23,6 +23,7 @@ regionsMes(maxSnap).Seq(1).Pattern(1).Dev=[];
 %% rmse for a given sequence(j) averaged over all parts(variation pattern(i)), compared
 %with average of rmse of adaptive measurements after same no of
 %measurements for all parts(variation pattern)
+
 for nMes=1:maxSnap
     fileName=sprintf('detAllSeq%dReg.mat',nMes);
     tempvar=load(fileName);
@@ -40,12 +41,13 @@ for nMes=1:maxSnap
         
         allMesReg=regionsMes(nMes).Seq(j).Regions;
         nMesReg=length(allMesReg);
-        for i=numberCompleteMeasure+1:totalInstances % i for each part
+        for i=numberCompleteMeasure+1:nPattern % i for each part
             
             % adding Rmse
             rmseD=rmseD+regionsMes(nMes).Seq(j).Pattern(i).Rmse;
             rmseA=rmseA+seqPred(i).Snap(nMesReg).RmseT(nMesReg);
-        end
+		end
+		
         delta(nMes).Seq(j)=((rmseD-rmseA)/rmseD)*100;
         
         if delta(nMes).Seq(j)<delta(nMes).Min
@@ -127,7 +129,6 @@ legendflex(hh, {'Best deterministic prediciton','Worst deterministic prediciton'
     'xscale', 0.66, ...
     'box','on');
 
-
-print('-r400','detAdpCompHinge','-dpng');
+export_fig('detAdpCompHinge','-png','-r400','-transparent');
 
 

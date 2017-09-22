@@ -242,7 +242,7 @@ for k=1:length(lineRmseEig)
     
 end
 
-stringTitle=[{'RMSE comparison after each measurement for'},{'different number of batches learnt from'}];
+stringTitle='';
 stringXlabel='Number of measurements';
 stringYlabel='RMSE in mm';
 rsmeFig1=changeAxesLooks(rsmeFig1,stringTitle,stringXlabel,stringYlabel);
@@ -253,7 +253,8 @@ rsmeFig1=changeAxesLooks(rsmeFig1,stringTitle,stringXlabel,stringYlabel);
     'fontsize'  ,12         , ...
     'box'       ,'off'       ,...
     'title'     ,'Number of batches learnt from'   );
-print('-r400','batchSizeCompInnerAvg','-dpng');
+
+export_fig('batchSizeCompInnerAvg','-png','-r400','-transparent');
 
 
 % plotting absolute eig comparison
@@ -265,4 +266,4 @@ fig=changeAxesLooks(fig,'Average RMSE versus different number of batches learnt 
 lineRmseEigAvg.LineWidth=1.5;
 plotAxis=fig.Children;
 plotAxis.XTickLabel=num2cell(nBatches);
-print('-r400','batchSizeSensitInnerAvg','-dpng');
+export_fig('batchSizeSensitInnerAvg','-png','-r400','-transparent');
