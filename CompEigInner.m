@@ -8,7 +8,7 @@ clear ;
 dbstop if error;
 
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
-% path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
+path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
 eps         =10E-16;
 fem         =femInit();
@@ -386,7 +386,7 @@ end
 
 
 
-% plotting eig cmparison
+%% plotting eig cmparison
 rsmeFig1=figure;
 lineRmseEig=plot(rmseAvg);
 
@@ -397,8 +397,8 @@ for k=1:length(lineRmseEig)
 	lineRmseEig(k).LineWidth=1.5;
 	lineRmseEig(k).Color=cmapRmsePlot(k,:);
 	lineRmseEig(k).Marker=markers{k};
-	lineRmseEig(k).MarkerFaceColor=cmapRmsePlot(k,:);
-% 	lineRmseEig(k).MarkerEdgeColor='none';
+	lineRmseEig(k).MarkerFaceColor='none';
+	lineRmseEig(k).MarkerEdgeColor=cmapRmsePlot(k,:);
 	legRmseEig{k}=sprintf('%i',nBasis(k));
 	
 end
@@ -412,7 +412,7 @@ rsmeFig1=changeAxesLooks(rsmeFig1,'',stringXlabel,stringYlabel);
 	'buffer'    ,[-10 -5]      , ...
 	'nrow'      ,4          ,...
 	'fontsize'  ,12         , ...
-	'box'       ,'off'       ,...
+	'box'       ,'on'       ,...
 	'title'     ,'Number of basis shapes'   );
 export_fig(sprintf('Basis%i',i),'-png','-r400','-transparent');
 export_fig(sprintf('Basis%i',i),'-pdf','-transparent');
@@ -426,8 +426,6 @@ fig=changeAxesLooks(fig,'Average RMSE for different number of eign vectors ',...
 lineRmseEigAvg.LineWidth=1.5;
 plotAxis=fig.Children;
 plotAxis.XTickLabel=num2cell(nBasis);
-% fig('PaperPositionMode','auto');
-% print('eigCompInnerAvg','-dpdf');
 export_fig('eigCompInnerAvg','-png','-r400','-transparent');
 export_fig('eigCompInnerAvg','-pdf','-transparent');
 

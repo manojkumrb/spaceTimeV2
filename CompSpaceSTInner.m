@@ -21,7 +21,7 @@ idPart      =domainID;
 coordi          =fem.xMesh.Node.Coordinate;
 nodeIdDomain    =fem.Domain(idPart).Node;
 nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
-
+%}
 %% load pre-defined part regions
 partRegions				=load('inner9Regions.mat');%inner_regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRect		=partRegions.nodeIDoutRect;
@@ -74,7 +74,7 @@ infv  = @(varargin) inf(varargin{:},struct('s',01.0));           % VFE, opt.s = 
 % fitc is used here to avoid the trouble of finding key points again
 hyp				= load('hypInnerFitc.mat');%minimize(hyp, @gp, -50,  infv, m0, cov, likfunc,  x, devSmooth(sourcePattern,:)'); % for covFITC
 hyp             = hyp.hyp;
-%}
+%%}
 %% running spatial gpr prediction
 numberCompleteMeasure   =10;
 maxSnap                 =length(seqPred(end).Snap);
@@ -211,7 +211,7 @@ for i=20%numberCompleteMeasure+1:numberCompleteMeasure+1+nInstances %
     myLine.LineWidth=1.5;
     myLine2.LineWidth=1.5;
     % legend
-    legendflex([myLine2,myLine], {'Spatio-temporal Kalman filter','Spatial Kriging'}, ...
+    legendflex([myLine2,myLine], {'Prposed methodology','State-of-art'}, ...
         'anchor', {'ne','ne'}, ...
         'buffer', [0 0], ...
         'nrow',   2,...
@@ -232,6 +232,9 @@ end
 % end
 
 %% Rmse diff AFTER EACH MEASUREMET AVERAGED FOR ALL PATTERNS
+% plot parameters
+markers = {'o','s','d','^','v','x','+','*','.','>','<','p','h','o','s','d','^','v','x'};
+cmapRmsePlot = cbrewer('qual','Set1',4);
 
 rmseST=zeros(1,maxSnap);
 rmseS=zeros(1,maxSnap);
@@ -254,26 +257,38 @@ totalInstances= nPattern-(numberCompleteMeasure);
 rmseST	= rmseST-rmseST(maxSnap).*ones(size(rmseS));
 rmseS	= rmseS-rmseS(maxSnap).*ones(size(rmseS));
 
-delta=((rmseS-rmseST)./rmseS)*100;
-fig=figure;
-hh=plot(delta);
-fig=changeAxesLooks(fig,'','Number of measurements','Percentage improvement');
-print('spaceAndSTCompInnerImprovePer','-dpdf');
+% % delta plotting
+% delta=((rmseS-rmseST)./rmseS)*100;
+% fig=figure;
+% hh=plot(delta);
+% fig=changeAxesLooks(fig,'','Number of measurements','Percentage improvement');
+% print('spaceAndSTCompInnerImprovePer','-dpdf');
 
 
 
 fig=figure;
-hh=plot(1:length(rmseS),rmseS./totalInstances,1:length(rmseST),rmseST./totalInstances);
+linesComp=plot(1:length(rmseS),rmseS./totalInstances,1:length(rmseST),rmseST./totalInstances);
+
+
+
+for k=1:length(linesComp)
+    linesComp(k).LineWidth=1.5;
+    linesComp(k).Color=cmapRmsePlot(k,:);
+    linesComp(k).Marker=markers{k};
+	linesComp(k).MarkerFaceColor='none';
+	linesComp(k).MarkerEdgeColor=cmapRmsePlot(k,:);
+    
+end
+
 fig=changeAxesLooks(fig,'','Number of measurements','RMSE in mm');
 
-set(hh,'linewidth',1.5);
-
-legendflex(hh, {'State-of-art','Proposed methodology'}, ...
+legendflex(linesComp, {'State-of-art','Proposed methodology'}, ...
         'anchor', {'ne','ne'}, ...
-        'buffer', [0 0], ...
+        'buffer', [-10 -10], ...
         'nrow',   2,...
         'fontsize',12, ...
         'xscale', 0.66, ...
         'box','on');
 export_fig('spaceAndSTCompInner','-pdf','-transparent');
+export_fig('spaceAndSTCompInner','-png','-r400','-transparent');
 

@@ -226,7 +226,8 @@ for k=1:length(nBatches)
     rmseAvg(:,k)=sum(rmsePlot,2)./nInstances; % averaging all replications
     rmseAvg(:,k)=rmseAvg(:,k)-rmseAvg(maxSnap,k).*ones(size(rmseAvg(:,k)));
 end
-% plotting eig cmparison
+
+%% plotting eig cmparison
 rsmeFig1=figure;
 lineRmseEig=plot(rmseAvg);
 
@@ -236,8 +237,8 @@ for k=1:length(lineRmseEig)
     lineRmseEig(k).LineWidth=1.5;
     lineRmseEig(k).Color=cmapRmsePlot(k,:);
     lineRmseEig(k).Marker=markers{k};
-    lineRmseEig(k).MarkerFaceColor=cmapRmsePlot(k,:);
-    % 	lineRmseEig(k).MarkerEdgeColor='none';
+	lineRmseEig(k).MarkerFaceColor='none';
+	lineRmseEig(k).MarkerEdgeColor=cmapRmsePlot(k,:);
     legRmseEig{k}=sprintf('%i',nBatches(k));
     
 end
@@ -251,10 +252,11 @@ rsmeFig1=changeAxesLooks(rsmeFig1,stringTitle,stringXlabel,stringYlabel);
     'buffer'    ,[-10 -5]      , ...
     'nrow'      ,2          ,...
     'fontsize'  ,12         , ...
-    'box'       ,'off'       ,...
-    'title'     ,'Number of batches learnt from'   );
+    'box'       ,'on'       ,...
+    'title'     ,'Number of batches'   );
 
 export_fig('batchSizeCompInnerAvg','-png','-r400','-transparent');
+export_fig('batchSizeCompInnerAvg','-pdf','-transparent');
 
 
 % plotting absolute eig comparison
@@ -262,7 +264,7 @@ fig=figure;
 rmseAvgeEig=sum(rmseAvg)./20;  % summming errors from all partial measurements for a given number of eigen vectors
 lineRmseEigAvg=plot(rmseAvgeEig);
 fig=changeAxesLooks(fig,'Average RMSE versus different number of batches learnt from ',...
-    'Number of batches learnt from','RMSE in mm');
+    'Number of batches','RMSE in mm');
 lineRmseEigAvg.LineWidth=1.5;
 plotAxis=fig.Children;
 plotAxis.XTickLabel=num2cell(nBatches);

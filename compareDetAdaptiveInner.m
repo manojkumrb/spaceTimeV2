@@ -68,6 +68,9 @@ for nMes=1:maxSnap
 end
 
 %% plotting 
+markers = {'o','s','d','^','v','x','+','*','.','>','<','p','h','o','s','d','^','v','x'};
+cmapRmsePlot = cbrewer('qual','Set1',5);
+
 for i=1:maxSnap
     rmseAvgDetMin(i)=delta(i).RmseDetMin;
     rmseAvgDetMax(i)=delta(i).RmseDetMax;
@@ -112,16 +115,25 @@ patchHandle.EdgeColor=[255,255,255]./256;
 
 % Plotting means, max and min
 hold all
-hh=plot(1:length(rmseAvgDetMin),rmseAvgDetMin,...
+linesComp=plot(1:length(rmseAvgDetMin),rmseAvgDetMin,...
     1:length(rmseAvgDetMax),rmseAvgDetMax,...
     1:length(rmseAvgAdap),rmseAvgAdap);
+
+for k=1:length(linesComp)
+	
+    linesComp(k).LineWidth=1.5;
+    linesComp(k).Color=cmapRmsePlot(k,:);
+    linesComp(k).Marker=markers{k};
+	linesComp(k).MarkerFaceColor='none';
+	linesComp(k).MarkerEdgeColor=cmapRmsePlot(k,:);
+    
+end
 
 fig=changeAxesLooks(fig,{'Average RMSE of Best deterministic prediciton','compared to adaptive prediction'},...
     'Number of measurements','RMSE in mm');
 
-set(hh,'linewidth',1.5);
 
-legendflex(hh, {'Best deterministic prediciton','Worst deterministic prediciton','Adaptive prediction'}, ...
+legendflex(linesComp, {'Best deterministic prediciton','Worst deterministic prediciton','Adaptive prediction'}, ...
     'anchor', {'ne','ne'}, ...
     'buffer', [0 0], ...
     'nrow',   3,...
