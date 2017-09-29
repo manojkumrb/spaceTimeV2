@@ -77,9 +77,6 @@ for i=1:maxSnap
     rmseAvgAdap(i)=delta(i).RmseA;
 end
 
-rmseAvgDetMin	= rmseAvgDetMin-rmseAvgDetMin(maxSnap).*ones(size(rmseAvgDetMin));
-rmseAvgDetMax	= rmseAvgDetMax-rmseAvgDetMax(maxSnap).*ones(size(rmseAvgDetMax));
-rmseAvgAdap		= rmseAvgAdap-rmseAvgAdap(maxSnap).*ones(size(rmseAvgAdap));
 
 % standard error claculation
 rmseSE=zeros(totalInstances,maxSnap);

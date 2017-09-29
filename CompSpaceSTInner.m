@@ -254,9 +254,6 @@ end
 totalInstances= nPattern-(numberCompleteMeasure);
 
 
-rmseST	= rmseST-rmseST(maxSnap).*ones(size(rmseS));
-rmseS	= rmseS-rmseS(maxSnap).*ones(size(rmseS));
-
 % % delta plotting
 % delta=((rmseS-rmseST)./rmseS)*100;
 % fig=figure;

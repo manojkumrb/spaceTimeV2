@@ -224,7 +224,7 @@ for k=1:length(nBatches)
     end
     
     rmseAvg(:,k)=sum(rmsePlot,2)./nInstances; % averaging all replications
-    rmseAvg(:,k)=rmseAvg(:,k)-rmseAvg(maxSnap,k).*ones(size(rmseAvg(:,k)));
+
 end
 
 %% plotting eig cmparison

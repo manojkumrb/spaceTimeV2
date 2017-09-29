@@ -333,29 +333,38 @@ for k=1:length(nBasis)
 % 		    print(sprintf('Basis%i',i),'-dpng')
 % 		end
 % 	
-% 		% %Plotting regions and key points
-% 	
-% 		meshplotAxisDefined(fem,1);
-% 		hold all;
-% 		figDense=gcf;
-% 	
-% 		meshplotAxisDefined(fem,1);
-% 		hold all;
-% 		figCoarse=gcf;
-% 		for i=1:size(nodeIDoutRectCoarse,2)
-% 	
-% 			set(0, 'currentfigure', figDense)
-% 			regionIndex=find(nodeIDoutRectCoarse(:,i));%% finds selected nodes
-% 			scatter3(nodeCoord(regionIndex,1),nodeCoord(regionIndex,2),nodeCoord(regionIndex,3),...
-% 				'o','filled','linewidth',2);
-% 	
-% 			set(0, 'currentfigure', figCoarse)
-% 			regionIndex=find(nodeIDoutRectDense(:,i));%% finds selected nodes
-% 			scatter3(nodeCoord(regionIndex,1),nodeCoord(regionIndex,2),nodeCoord(regionIndex,3),...
-% 				'o','filled','linewidth',2);
-% 	
-% 		end
+		% %Plotting regions and key points
+		
+		
+	
+		meshplotAxisDefined(fem,1);
+		axis off
+		hold all;
+		figDense=gcf;
+		view([0,0]);
+		export_fig(figDense,'innerMesh','-png','-r400','-transparent');
 
+		meshplotAxisDefined(fem,1);
+		axis off
+		hold all;
+		figCoarse=gcf;
+		for i=1:size(nodeIDoutRectCoarse,2)
+	
+			set(0, 'currentfigure', figCoarse)
+			regionIndex=find(nodeIDoutRectCoarse(:,i));%% finds selected nodes
+			scatter3(nodeCoord(regionIndex,1),nodeCoord(regionIndex,2),nodeCoord(regionIndex,3),...
+				'o','filled','linewidth',1,'markerfacecolor','k');
+			view([0,0]);
+	
+			set(0, 'currentfigure',figDense )
+			regionIndex=find(nodeIDoutRectDense(:,i));%% finds selected nodes
+			scatter3(nodeCoord(regionIndex,1),nodeCoord(regionIndex,2),nodeCoord(regionIndex,3),...
+				'o','filled','linewidth',2);
+			view([0,0]);
+		end
+
+		export_fig(figCoarse,'innerKeyPoints','-png','-r100','-transparent');
+% 		export_fig(figDense,'innerRegions','-png','-r400','-transparent');
 
 end
 %%
@@ -381,7 +390,7 @@ for k=1:length(nBasis)
 	end
 	
 	rmseAvg(:,k)=sum(rmsePlot,2)./(length(seqPred)-(numberCompleteMeasure+1)); % averaging all replications
-	rmseAvg(:,k)=rmseAvg(:,k)-rmseAvg(maxSnap,k).*ones(size(rmseAvg(:,k)));
+
 end
 
 
@@ -441,24 +450,26 @@ export_fig('eigCompInnerAvg','-pdf','-transparent');
 % plotAxis.XTickLabel=num2cell(nBasis);
 
 %% plotting zeroth prediction and priginal pattern
-% 
-% patternNo=34;
-% cDelta= 0.25;
-% % cmin        =1.1*min(devPatterns(patternNo,:));
-% % cmax        =1.1*max(devPatterns(patternNo,:));
-% devST0=seqPred(patternNo).Snap(maxSnap).Ytp0;
-% contourDomainPlot(fem,idPart,devST0,1)
-% contourcmap('parula',cDelta);
-% % caxis([cmin cmax])
-% view(0,0)
-% print('zerothPred','-dpdf');
-% 
-% devST=devPatterns(patternNo,:);
-% contourDomainPlot(fem,idPart,devST,1)
-% view(0,0)
-% contourcmap('parula',cDelta);
-% % fig('PaperPositionMode','auto');
-% print('originalDev','-dpdf');
+
+patternNo=20;
+cDelta= 0.25;
+% cmin        =1.1*min(devPatterns(patternNo,:));
+% cmax        =1.1*max(devPatterns(patternNo,:));
+devST0=seqPred(patternNo).Snap(maxSnap).Ytp0;
+contourDomainPlot(fem,idPart,devST0,1)
+contourcmap('parula',cDelta);
+% caxis([cmin cmax])
+view(0,0)
+export_fig('zerothPred','-png','-r400','-transparent');
+export_fig('zerothPred','-pdf','-transparent');
+
+devST=devPatterns(8).FemDevDomain(patternNo,:);
+contourDomainPlot(fem,idPart,devST,1)
+view(0,0)
+contourcmap('parula',cDelta);
+% fig('PaperPositionMode','auto');
+export_fig('originalDev','-png','-r400','-transparent');
+export_fig('originalDev','-pdf','-transparent');
 %% plotting original pattern
 
 % 

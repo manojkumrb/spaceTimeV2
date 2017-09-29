@@ -2,9 +2,9 @@
 % removed all redundat code, refer compareEigInnerNewAdapCriter for code to
 % plot and other redundancies
 
-%{
+% {
 % The block comment line to enable effective debug -remove the space after '%'
-%close all;
+close all;
 clear ;
 dbstop if error;
 
@@ -213,7 +213,7 @@ for j=1:length(nTrainBatch)
 					diff=bsxfun(@minus,devKey(i,:),ytp1(i-1,:));
 					rmseTp1(i)=sqrt(sum((diff).^2)/size(devKey,2));  % rmse without noisy input
 					seqPred(i).Snap(maxSnap).rmseTp1=rmseTp1(i);
-					seqPred(i).Snap(maxSnap).Ytp0=ytp1(i-1,:);
+					seqPred(i).Snap(maxSnap).Ytp0=ytp1U(i-1,:);
 					
 					% predicting the state variables and their variances for (t+1)
 					[attm1,pttm1]=getKalmanStatettm1(ptt,att,H,covErr);
@@ -223,7 +223,7 @@ for j=1:length(nTrainBatch)
 				
 				toc
 				%% saving data
-				fileString=sprintf('newinnerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
+				fileString=sprintf('innerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
 				save(fileString,'seqPred','-v7.3');
 				clear seqPred;
 				
@@ -259,7 +259,7 @@ for j=1:length(nTrainBatch)
 			
 			for k=1:length(nBasis)
 				
-				fileString=sprintf('newinnerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
+				fileString=sprintf('innerEigWithkrigYtp1%ibatch%ibasis_%.1fW1_%.1fW2.mat',nTrainBatch(j),nBasis(k),infoWeight(w),distweight(ww));
 				seqPred=load (fileString);
 				seqPred=seqPred.seqPred;
 				
@@ -285,21 +285,21 @@ end
 
 
 %  Plotting eigen basis
-% opts.tol = 1e-15;
-% opts.maxit=200;
-% opts.p=25;% 
-% [~ ,~,interpEigVec] = svds(devTrain,nBasis,'largest',opts);
-for i=9%size(keyEigVec,2)
-	contourDomainPlot(fem,idPart,devTest(i,:),1);
-% 	contourDomainPlot(fem,idPart,interpEigVec(:,i),1);
-
-% 	print(sprintf('Basis%i',i),'-dpng')
-view([0,0]);
-export_fig(sprintf('pattern%i',i),'-png','-r400','-transparent')
-end
-
-% load('S:\DLMR\Manoj\all data sensitivity inner\bestDeterministic.mat')
-% plot(rmseAvgDet)
+% % opts.tol = 1e-15;
+% % opts.maxit=200;
+% % opts.p=25;% 
+% % [~ ,~,interpEigVec] = svds(devTrain,nBasis,'largest',opts);
+% for i=9%size(keyEigVec,2)
+% 	contourDomainPlot(fem,idPart,devTest(i,:),1);
+% % 	contourDomainPlot(fem,idPart,interpEigVec(:,i),1);
+% 
+% % 	print(sprintf('Basis%i',i),'-dpng')
+% view([0,0]);
+% export_fig(sprintf('pattern%i',i),'-png','-r400','-transparent')
+% end
+% 
+% % load('S:\DLMR\Manoj\all data sensitivity inner\bestDeterministic.mat')
+% % plot(rmseAvgDet)
 
 
 
