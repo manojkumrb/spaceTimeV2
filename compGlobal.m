@@ -9,7 +9,7 @@ clear ;
 dbstop if error;
 
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
-path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
+% path(path,'\\megara\dlmr\Manoj\all data sensitivity inner'); % all data files in megara
 
 eps         =10E-16;
 fem         =femInit();
@@ -31,8 +31,8 @@ partRegions     =load('inner9Regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRectDense   =partRegions.nodeIDoutRect;
 
 %% SIMULATED autocorrelated part variation
-devPatterns		=load('simAutoCorDevInnerBatchesCombined.mat');%  %hingeDevArSimLoc
-devPatterns		=devPatterns.simData;
+devPatterns		=load('devAutoCorrInner_dense.mat');%  %hingeDevArSimLoc
+devPatterns		=devPatterns.femDevDomain;
 
 %% loading key points from predefined selection
 selNodes=load('doorInnerSelNodes.mat');
@@ -52,26 +52,27 @@ nu.Type     ='diag';
 nu.StdDev   =1e-4;
 
 %% setting test and train data and other parameters
-testBatch		=8;
-nTrainBatch		=2;%[1,2,3,4,5,6];
+testBatch		=1;
+nTrainBatch		=1;%[1,2,3,4,5,6];
 nBasis			=45;%5:5:70;    %     % set containing number of basis vectors
 infoWeight		= 1;
 distweight		= 0;
 
-devTest				=devPatterns(testBatch).FemDevDomain;
-devKey  =devTest(:,iMnp);
+% devTest				=devPatterns(testBatch).FemDevDomain;
+devTest		=devPatterns;
+devKey		=devTest(:,iMnp);
 
 
 
 for j=1:length(nTrainBatch)
 	
 	
-	devTrain			=[];
-	
-	for l=1:nTrainBatch(j)        % adding train data
-		devTrain		=[devTrain;devPatterns(l).FemDevDomain];
-	end
-	
+% 	devTrain			=[];
+% 	
+% 	for l=1:nTrainBatch(j)        % adding train data
+% 		devTrain		=[devTrain;devPatterns(l).FemDevDomain];
+% 	end
+	devTrain	=devTest;
 	
 	%%
 	for w=1:length(infoWeight)

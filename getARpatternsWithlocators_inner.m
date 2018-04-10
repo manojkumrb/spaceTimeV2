@@ -1,6 +1,8 @@
 % simulate variation patterns for a component using FEM. case: hinge
 % getting deviaiton pattens with slots holes and clamps; the deviations are
 % auto correlated
+
+% { 
 close all;clear;
 
 run 'C:\Users\babu_m\Documents\GitHub\source\initFiles.m';
@@ -10,6 +12,7 @@ fileName{1}=strcat(inpFiles,'\door_inner.inp');%\hinge.inp');%\Remesh_hinge.inp'
 % fem=importMesh(fem,fileName{1});%'top_hat.inp'); %use only for top hat
 fem=importMultiMesh(fem, fileName);%has provisions for domain separation
 % within code
+fem.Options.StiffnessUpdate=true;
 fem=femPreProcessing(fem);
 domainID=1;
 idPart=domainID;
@@ -17,6 +20,7 @@ normal=fem.xMesh.Node.Normal;
 coordi=fem.xMesh.Node.Coordinate;
 nodeIdDomain=fem.Domain(idPart).Node;
 nodeCoord=fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for the domain
+%}
 
 %% finding mesh nodeID
 %
@@ -32,7 +36,7 @@ for k=1:nBatches
 	a0=0;
 	a1=0.6;
 	sigma=1;
-	nPatterns=2;
+	nPatterns=50;
 	
 	%% locators' details (getting global node coordinates)
 	% For full mesh
@@ -79,17 +83,26 @@ for k=1:nBatches
 	
 	for i=1:nPatterns
 		
+
+
+		%% SET SOLVING OPTIONS:
+		fem.Options.GapFrame='ref';		
+		fem.Options.Solver.MaxIter=15;
+		fem.Options.Solver.PenaltyStiffness=1e5;
+		fem.Options.Solver.Method='penalty';
+		fem.Options.Solver.LinearSolver='cholmod';   %cholmod umfpack
+		fem.Options.Solver.Eps=1e-3;     %1e-3
+		
+		
+		% setting boundary conditions
 		fem=setNCblocks(fem,nodeIdNc,dir1n,domainID,devNc(i,:),[]);
 		fem=setClampsNormalTra(fem,nodeIdClamps,dirC,devClamps(i,:));
 		%     fem=setClamps(fem,nodeIdClamps,2,devClamps(i,:));
 		fem=setSlots(fem,nodeIdSlots,dir1s,dir2s,domainID,[]);
 		fem=setPin(fem,nodeIdPin,dir1p,dir2p,domainID,[]);
-		fem.Options.Solver.MaxIter=15;
-		fem.Options.Solver.Eps=1e-3;
-		
 		fem=femReset(fem);
 		fem=femRefresh(fem);
-% 		fem=femSolve(fem);
+		fem=femSolve(fem);
 		
 		% node deviations are in fem.Sol.U, u,v,w,rot1,rot2,rrot3 sequentially for all nodes
 		femDev(:,1)=fem.Sol.U(1:6:end);% 1 for u, 2 for v,3 for w etc..
@@ -108,8 +121,8 @@ for k=1:nBatches
 		        fem.Sol.UserExp=femDevDomain(i,:);
 		        fem.Post.Contour.Resolution=1;
 		        fem.Post.Options.SymbolSize=15;
-		        fem.Post.Contour.MaxRange=5;
-		        fem.Post.Contour.MinRange=-5;
+		        fem.Post.Contour.MaxRangeCrop=5;
+		        fem.Post.Contour.MinRangeCrop=-5;
 		        contourPlot(fem);
 		        bilateralNodeBcPlot(fem)
 		        unilateralBcPlot(fem)
@@ -131,7 +144,7 @@ for k=1:nBatches
 end
 
 %% saving variables
-% save('simAutoCorDevInnerBatches2.mat','simData');
+save('simAutoCorDevInnerBatches2.mat','simData');
 
 
 %% %% plotting simulated deviaitons

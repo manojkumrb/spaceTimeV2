@@ -3,7 +3,7 @@ function [eigVec,R,V,H,covErr]=getSystemMatrices(nodeCoord,dev,sigmaMes,nu)
 
 %% the kalman filter notations are from Cressie and wikle (biometrica)
 %
-% nodeCoord = nx 3 matrix of point coordinates in te hsame order as defined
+% nodeCoord = nx 3 matrix of point coordinates in teh same order as defined
 %             in the domain of the part
 % dev       = t x n matrix of series of deviations to be modelled. The deviations
 %             are centered. t id the number of time instances, n is the
@@ -19,7 +19,7 @@ function [eigVec,R,V,H,covErr]=getSystemMatrices(nodeCoord,dev,sigmaMes,nu)
 % State equations
 %       Z_t=eigVec*a_t+\nu+\eps
 %       a_t=(eigVec'*B)*a_(t-1)+eigVec'*\eta
-%       a_t=H*a_(t-1)+eigVec'*\eta
+%          =H*a_(t-1)+eigVec'*\eta
 %
 % zt        = measurement vector of length n, at time t
 % pttm1     = state variable covariance matrix (of size k x k) at t given (t-1)
@@ -75,7 +75,7 @@ C0y=C0z-R;
 C0y = nearestSPD(C0y);
 
 % B matrix ie. the matrix that specifies autocorrelation b/w a_t and a_(t-1)
-J=eigVec'; % I take eigVec'eigVec to be identity matrix as eigVec is orthogonal (eigVec corresponds to phi the eigen vector matrix)
+J=eigVec'; % I take eigVec'eigVec to be identity matrix as eigVec is orthogonal (eigVec corresponds to phi the eigen vector matrix in teh source paper)
 B=(C1z*J')/(J*(C0z-R-V)*J');
 % estimation of JQJ' matrix ie. the state error covariance matrix
 H=J*B;

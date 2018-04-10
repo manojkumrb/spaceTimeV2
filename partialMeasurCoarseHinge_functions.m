@@ -108,7 +108,9 @@ for i=numberCompleteMeasure+1:size(zt,1) % i for each part
         end
         
         [~,indexMax]=max(selIndex);
+		
         selRegion=nRegions(indexMax);
+		
         allMesReg=[allMesReg;selRegion]; % all the measured regions
         [tempV,tempR,tempEigVec,tempZ,regionIndex]=getRegionSysMat(nodeIDoutRect,allMesReg,V,R,eigVec,zt(i,:));
         % updating the state variables after partial measurement
