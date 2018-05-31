@@ -27,7 +27,7 @@ nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for th
 
 %}
 %% load pre-defined part regions
-partRegions     =load('inner9Regions.mat');% contains variable nodeIDoutRect
+partRegions     =load('inner9regions405CoarseMesh.mat');% contains variable nodeIDoutRect
 nodeIDoutRectDense   =partRegions.nodeIDoutRect;
 
 %% SIMULATED autocorrelated part variation
@@ -92,7 +92,7 @@ for j=1:length(nTrainBatch)
 					sigmaMes,nu,iMnp,nBasis(k));
 				
 				%% eigen interpolation
-				fileNameCoarse= 'innerSelNodes - Copy.inp';
+				fileNameCoarse= 'selectedKeyInnerL504coarse.stl';
 				interpEigVec=getEigenInterp(nodeCoord,fileNameCoarse,keyEigVec, domainID);
 % 				interpEigVec=load('interpEigVecInner3_400.mat');
 % 				interpEigVec=interpEigVec.interpEigVec;

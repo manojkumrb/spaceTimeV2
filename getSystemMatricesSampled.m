@@ -76,7 +76,7 @@ end
 
 
 % zero lag y process covariance
-C0y=C0z-R;
+C0y = C0z-R;
 C0y = nearestSPD(C0y);
 
 % B matrix ie. the matrix that specifies autocorrelation b/w a_t and a_(t-1)
