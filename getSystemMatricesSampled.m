@@ -49,7 +49,7 @@ nodeCoord=nodeCoordAll(iMnp,:);
 % diff=dev-x;
 
 % estimation of covariances c_z
-[n, t]=size(dev);
+[t,n]=size(dev);
 % zero lag covariance
 gMean=sum(sum(dev))/(n*t);
 C0z     =((dev-gMean)'*(dev-gMean))./t;

@@ -7,7 +7,7 @@ allDataInner_eigBatch1NumBasis30WoKrig 	: Prediction withput krigging with 30 ba
 
 allDataInner_eigWOk2.mat				: prediction without krigging to test the effect of number of basis vectors										
 
-doorInnerSelNodes 						: coordinates of key points, ie points used in kalman filter
+doorInnerSelNodes 						: coordinates of key points, ie points used in kalman filter (has 559 points)
 
 interEigVecs25_90_directionChange 		: interpolated eigen vectors first obtained after nodifying the claculation of barycentric coordinates
 
@@ -22,4 +22,6 @@ simAutoCorDevInnerBatchesCombined 		: Deviation patterns obtained from simulatio
 innerSelNodes - Copy.inp 				: mesh file of the coarse mesh obtained from cgal by advancing front construction		
 deterministicPredHinge.mat				: prediction for hinge with all possible combinations of measurement sequence (1-5 regions) 25 eigen basis
 gprPredSourceBatch6Inner 				: for comparision between space and space time ..has gpr predicitons for all 40 patterns of batch 6 of inner through gpr with optimised hyp from save file.
-									
+
+inner9Regions 							: regions for the RLW door inner with 87309 nodes
+devAutoCorrInner_dense 					: Deviation patterns obtained from simulation for the RLW door inner with 87309 nodes

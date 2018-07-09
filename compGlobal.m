@@ -2,7 +2,7 @@
 % removed all redundat code, refer compareEigInnerNewAdapCriter for code to
 % plot and other redundancies
 
-% {
+%{
 % The block comment line to enable effective debug -remove the space after '%'
 close all;
 clear ;
@@ -27,7 +27,7 @@ nodeCoord       =fem.xMesh.Node.Coordinate(nodeIdDomain,:); % coordinates for th
 
 %}
 %% load pre-defined part regions
-partRegions     =load('inner9regions405CoarseMesh.mat');% contains variable nodeIDoutRect
+partRegions     =load('inner9Regions.mat');% contains variable nodeIDoutRect
 nodeIDoutRectDense   =partRegions.nodeIDoutRect;
 
 %% SIMULATED autocorrelated part variation
@@ -92,7 +92,7 @@ for j=1:length(nTrainBatch)
 					sigmaMes,nu,iMnp,nBasis(k));
 				
 				%% eigen interpolation
-				fileNameCoarse= 'selectedKeyInnerL504coarse.stl';
+				fileNameCoarse= 'innerSelNodes - Copy.inp';
 				interpEigVec=getEigenInterp(nodeCoord,fileNameCoarse,keyEigVec, domainID);
 % 				interpEigVec=load('interpEigVecInner3_400.mat');
 % 				interpEigVec=interpEigVec.interpEigVec;
@@ -141,7 +141,7 @@ for j=1:length(nTrainBatch)
 				rmseTp1=zeros(size(devKey,1),1);
 				
 				
-				for i=numberCompleteMeasure+1:size(devKey,1) % i for each part
+				for i=numberCompleteMeasure+1:size(devKey,1) %numberCompleteMeasure+4 %i for each part
 					
 					nSnaps=1;
 					allMesReg=[];
