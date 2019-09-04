@@ -1,4 +1,4 @@
-function [ytt,VarYtt,ytp1,VarYtp1]=getPredictions(eigVec,att,ptt,H,V,R,covErr)
+function [ytt,VarYtt,ytp1,VarYtp1,VarYttFull]=getPredictions(eigVec,att,ptt,H,V,R,covErr)
 %
 % gives filtered and predicted values for deviation and its variance 
 %
@@ -25,9 +25,10 @@ function [ytt,VarYtt,ytp1,VarYtp1]=getPredictions(eigVec,att,ptt,H,V,R,covErr)
 % yttp1     = the Predicted value for deviation in (t+1)
 % VarYtt    = variance for the predicted value in (t+1)
 
-ytt=att'*eigVec';   % taking transpose to maintain convention of deviation matrix(i.e. rep x nodes)
-VarYtt=diag(eigVec*ptt*eigVec'+(V+R));
-ytp1=att'*H'*eigVec';  % taking transpose to maintain convention of deviation matrix
-VarYtp1=diag(eigVec*(H*ptt*H'+covErr)*eigVec'+(V+R));
+ytt				=att'*eigVec';   % taking transpose to maintain convention of deviation matrix(i.e. rep x nodes)
+VarYttFull		=eigVec*ptt*eigVec'+(V+R);
+VarYtt			=diag(VarYttFull)';
+ytp1			=(H*att)'*eigVec';  % taking transpose to maintain convention of deviation matrix
+VarYtp1			=diag(eigVec*(H*ptt*H'+covErr)*eigVec'+(V+R))';
 
 end

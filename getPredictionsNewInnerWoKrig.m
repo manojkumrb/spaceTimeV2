@@ -1,8 +1,7 @@
-function [ytt,VarYtt,ytp1,VarYtp1,yttU,ytp1U,VarYttU]=getPredictionsNewInnerWoKrig(interpEigVec,...
+function [ytt,VarYtt,ytp1,VarYtp1,yttU,ytp1U,VarYttU,VarYtp1Full]=getPredictionsNewInnerWOKrig(interpEigVec,...
 						eigVeckey,tempEigVec,att,ptt,H,V,R,covErr,hyp,nodeCoordinatesU,...
 						nodeCoordinatesM,xTemp,zTemp)
-% deleted krigging to compare the error 
-% 
+% Function without krigging the residuals
 %
 %
 % The state space representation format
@@ -37,28 +36,41 @@ function [ytt,VarYtt,ytp1,VarYtp1,yttU,ytp1U,VarYttU]=getPredictionsNewInnerWoKr
 % VarYtt			= variance for the predicted value in (t+1)
 % yttU				= the filtered value for deviation of all mesh points
 % yttp1				= the Predicted value for deviation in (t+1)of all mesh points
-
+% VarYtp1Full		= full covariance matrix for standardising residuals
 
 
 % simple krigging the residuals
-m0 = {'meanZero'};  hyp.mean = [];      % no hyperparameters are needed
-covFunc = {@covMaternard,3};  % Matern class d=3
+m0		= {'meanZero'};  hyp.mean = [];      % no hyperparameters are needed
+covFunc = {@covMaternard,5};  % Matern class d=3
 likfunc = {'likGauss'};  % gaussian likelihood
 
 
-ytt=att'*eigVeckey';  % taking transpose to maintain convention of deviation matrix(i.e. rep x nodes)
-VarYtt=diag(eigVeckey*ptt*eigVeckey'+(V+R));
-ytp1=att'*H'*eigVeckey';  % taking transpose to maintain convention of deviation matrix
-VarYtp1=diag(eigVeckey*(H*ptt*H'+covErr)*eigVeckey'+(V+R));
+yTemp	=att'*tempEigVec';
+diff	=zTemp-yTemp;
+% [mpredicted,varPred] = gp(hyp, @infExact, m0, covFunc, likfunc, xTemp,diff', nodeCoordinatesM );
 
+
+
+%% for testing without krigging
+
+ytt		=att'*eigVeckey';   % taking transpose to maintain convention of deviation matrix(i.e. rep x nodes)
+
+VarYtt	=diag(eigVeckey*ptt*eigVeckey'+R); % the V matrix covariance should come from GPR so removing it now
+ytp1	=att'*H'*eigVeckey';  % taking transpose to maintain convention of deviation matrix
+
+VarYtp1Full	=eigVeckey*(H*ptt*H'+covErr)*eigVeckey'+(R+V);
+VarYtp1	=diag(VarYtp1Full);
+
+
+%%
 % prediction for all points on the mesh 
 % variance is neglected for now.. will consider it later.. variance for
-% only key poinsts in considered now.
-
-yttU=att'*interpEigVec';   % taking transpose to maintain convention of deviation matrix(i.e. rep x nodes)
-VarYttU=sum(interpEigVec.*(ptt*interpEigVec')',2); % comptation to calculate diagonal values of product of 3 matrices
+% only key points is considered now.
+% [mpredictedU,varPredU]	= gp(hyp, @infExact, m0, covFunc, likfunc, xTemp,diff', nodeCoordinatesU );
+yttU	=att'*interpEigVec';   % taking transpose to maintain convention of deviation matrix(i.e. rep x nodes)
+VarYttU	=sum(interpEigVec.*(ptt*interpEigVec')',2); % computation to calculate diagonal values of product of 3 matrices
 % this variance neglects other kalman filter variance sources (V + R) as in line 54
-ytp1U=att'*H'*interpEigVec';  % taking transpose to maintain convention of deviation matrix
+ytp1U	=att'*H'*interpEigVec';  % taking transpose to maintain convention of deviation matrix
 % VarYtp1U=diag(interpEigVec*(H*ptt*H')*interpEigVec');
 
 
